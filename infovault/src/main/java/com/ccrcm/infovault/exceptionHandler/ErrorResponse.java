@@ -1,4 +1,4 @@
-package com.ccrcm.infovault.ExceptionHandler;
+package com.ccrcm.infovault.exceptionHandler;
 
 import java.time.LocalDateTime;
 

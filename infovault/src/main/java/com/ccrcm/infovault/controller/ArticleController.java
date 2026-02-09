@@ -1,4 +1,4 @@
-package com.ccrcm.infovault.Controller;
+package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;

@@ -1,4 +1,4 @@
-package com.ccrcm.infovault.ExceptionHandler;
+package com.ccrcm.infovault.exceptionHandler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
