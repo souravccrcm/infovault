@@ -1,6 +1,7 @@
 package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
+import com.ccrcm.infovault.dto.response.ArticleListResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.ArticleService;
@@ -32,7 +33,8 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ApiResponse<List<ArticleResponse>> getAllArticles() {
+    public ApiResponse<ArticleListResponse> getAllArticles() {
+
         return new ApiResponse<>(
                 true,
                 "Articles fetched successfully",

@@ -71,3 +71,17 @@ CREATE TABLE articles (
 
     active BIT NOT NULL DEFAULT 1          -- soft delete
 );
+-------09/02/2026---------------------------------------------------------------------------------------
+CREATE TABLE user_login_logs (
+    id BIGINT IDENTITY PRIMARY KEY,
+
+    user_id BIGINT NOT NULL,         -- users.id
+    login_time DATETIME2 NOT NULL,
+    logout_time DATETIME2 NULL,      -- NULL = still logged in
+
+    ip_address VARCHAR(50),
+    user_agent VARCHAR(255),
+
+    created_at DATETIME2 DEFAULT GETDATE()
+);
+

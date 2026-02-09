@@ -1,12 +1,16 @@
 package com.ccrcm.infovault.service.impl;
 
 import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
+import com.ccrcm.infovault.dto.response.ArticleListResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.dto.response.ArticleTypeCountDTO;
 import com.ccrcm.infovault.entity.Article;
+import com.ccrcm.infovault.entity.UserLoginLog;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.exception.BadRequestException;
 import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.ArticleRepository;
+import com.ccrcm.infovault.repository.UserLoginLogRepository;
 import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +18,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final UserLoginLogRepository userLoginLogRepository;
 
     @Value("${file.storage.path}")
     private String storagePath;
@@ -78,10 +86,61 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleResponse> getAllArticles() {
-        return articleRepository.findByActiveTrue()
+    public ArticleListResponse getAllArticles() {
+
+        Long userId = 1L; // later from SecurityContext/SSO
+
+        // 1️⃣ Get last session
+        Optional<UserLoginLog> sessionOpt =
+                userLoginLogRepository.findTopByUserIdOrderByLoginTimeDesc(userId);
+
+        LocalDateTime fromTime = null;
+
+        if (sessionOpt.isPresent()) {
+            UserLoginLog log = sessionOpt.get();
+            fromTime = (log.getLogoutTime() != null)
+                    ? log.getLogoutTime()
+                    : log.getLoginTime();
+        }
+
+        // 2️⃣ Fetch active articles
+        List<ArticleResponse> articles = articleRepository.findByActiveTrue()
                 .stream()
                 .map(ArticleMapper::toResponse)
                 .toList();
+
+        long totalCount;
+        List<ArticleTypeCountDTO> typeCounts = new ArrayList<>();
+
+        // 3️⃣ Count logic
+        if (fromTime != null) {
+
+            totalCount = articleRepository.countNewArticles(fromTime);
+
+            List<Object[]> rows =
+                    articleRepository.countByArticleType(fromTime);
+
+            for (Object[] row : rows) {
+                typeCounts.add(
+                        new ArticleTypeCountDTO(
+                                (String) row[0],
+                                (Long) row[1]
+                        )
+                );
+            }
+
+        } else {
+            // First-time login
+            totalCount = articleRepository.countByActiveTrue();
+        }
+
+        // 4️⃣ Build final response
+        return new ArticleListResponse(
+                totalCount,
+                typeCounts,
+                articles
+        );
     }
+
+
 }
