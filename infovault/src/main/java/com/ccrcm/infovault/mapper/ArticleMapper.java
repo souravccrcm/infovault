@@ -26,7 +26,7 @@ public class ArticleMapper {
         response.setFilePath(article.getFilePath());
         response.setFileSize(article.getFileSize());
         response.setUploadedBy(article.getUploadedBy());
-        response.setActive(article.isActive());
+        response.setActive(article.getActive());
         response.setCreatedAt(article.getCreatedAt());
         response.setUpdatedAt(article.getUpdatedAt());
 

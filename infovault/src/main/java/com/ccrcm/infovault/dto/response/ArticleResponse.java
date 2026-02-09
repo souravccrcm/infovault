@@ -1,10 +1,10 @@
 package com.ccrcm.infovault.dto.response;
 
+import com.ccrcm.infovault.enums.ArticleStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class ArticleResponse {
@@ -18,7 +18,7 @@ public class ArticleResponse {
     // article metadata
     private String type;
     private String clinicalType;
-    private String status;
+    private ArticleStatus status;
 
     // file info
     private String fileName;
