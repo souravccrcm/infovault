@@ -4,10 +4,14 @@ import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface ArticleService {
 
     ArticleResponse uploadArticle(
             ArticleUploadRequest request,
             MultipartFile file
     );
+
+    List<ArticleResponse> getAllArticles();
 }
