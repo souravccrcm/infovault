@@ -1,5 +1,6 @@
 package com.ccrcm.infovault.entity;
 
+import com.ccrcm.infovault.enums.ArticleStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,8 +29,10 @@ public class Article extends BaseEntity {
     @Column(name = "clinical_type")
     private String clinicalType;
 
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status; // DRAFT / PUBLISHED
+    private ArticleStatus status; // DRAFT / PUBLISHED
 
     @Column(name = "file_name", nullable = false)
     private String fileName;

@@ -3,6 +3,8 @@ package com.ccrcm.infovault.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class ArticleResponse {
@@ -13,9 +15,20 @@ public class ArticleResponse {
     private String source;
     private String country;
 
-    private String articleType;
+    // article metadata
+    private String type;
     private String clinicalType;
     private String status;
 
+    // file info
     private String fileName;
+    private String filePath;
+    private Long fileSize;
+
+    // audit info
+    private Long uploadedBy;
+    private boolean active;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
