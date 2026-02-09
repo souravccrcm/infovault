@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 @Service
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
@@ -42,11 +41,18 @@ public class ArticleServiceImpl implements ArticleService {
         article.setTitle(request.getTitle());
         article.setSource(request.getSource());
         article.setCountry(request.getCountry());
-        article.setType(request.getType());
+        article.setArticleType(request.getType());
         article.setClinicalType(request.getClinicalType());
         article.setStatus(request.getStatus());
-        article.setActions(request.getActions());
+
+        article.setFileName(file.getOriginalFilename());
         article.setFilePath(filePath);
+        article.setFileSize(file.getSize());
+
+        // TEMP: hardcoded, later from SSO context
+        article.setUploadedBy(1L);
+
+        article.setActive(true);
 
         Article saved = articleRepository.save(article);
 
@@ -59,11 +65,11 @@ public class ArticleServiceImpl implements ArticleService {
         response.setTitle(article.getTitle());
         response.setSource(article.getSource());
         response.setCountry(article.getCountry());
-        response.setType(article.getType());
+        response.setType(article.getArticleType());
         response.setClinicalType(article.getClinicalType());
         response.setStatus(article.getStatus());
-        response.setActions(article.getActions());
         response.setFilePath(article.getFilePath());
+        response.setFileName(article.getFileName());
         return response;
     }
 }
