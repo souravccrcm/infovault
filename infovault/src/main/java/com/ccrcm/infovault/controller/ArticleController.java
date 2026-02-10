@@ -31,13 +31,4 @@ public class ArticleController {
         );
     }
 
-    @GetMapping
-    public ApiResponse<ArticleListResponse> getAllArticles() {
-
-        return new ApiResponse<>(
-                true,
-                "Articles fetched successfully",
-                articleService.getAllArticles()
-        );
-    }
 }

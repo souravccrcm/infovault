@@ -14,6 +14,4 @@ public interface ArticleService {
             MultipartFile file
     );
 
-
-    ArticleListResponse getAllArticles();
 }

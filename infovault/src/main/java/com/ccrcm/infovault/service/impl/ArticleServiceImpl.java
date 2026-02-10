@@ -28,7 +28,7 @@ import java.util.Optional;
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final UserLoginLogRepository userLoginLogRepository;
+
 
     @Value("${file.storage.path}")
     private String storagePath;
@@ -85,66 +85,7 @@ public class ArticleServiceImpl implements ArticleService {
         return ArticleMapper.toResponse(saved);
     }
 
-    @Override
-    public ArticleListResponse getAllArticles() {
 
-        Long userId = 1L; // later from SecurityContext/SSO
-
-        // Get last session
-        Optional<UserLoginLog> sessionOpt =
-                userLoginLogRepository.findTopByUserIdOrderByLoginTimeDesc(userId);
-
-        LocalDateTime fromTime = null;
-        LocalDateTime lastLogoutTime = null;
-
-        if (sessionOpt.isPresent()) {
-            UserLoginLog log = sessionOpt.get();
-
-            lastLogoutTime = log.getLogoutTime();
-
-            fromTime = (log.getLogoutTime() != null)
-                    ? log.getLogoutTime()
-                    : log.getLoginTime();
-        }
-
-        //  Fetch active articles
-        List<ArticleResponse> articles = articleRepository.findByActiveTrue()
-                .stream()
-                .map(ArticleMapper::toResponse)
-                .toList();
-
-        long totalCount;
-        List<ArticleTypeCountDTO> typeCounts = new ArrayList<>();
-
-        // Count logic
-        if (fromTime != null) {
-
-            totalCount = articleRepository.countNewArticles(fromTime);
-
-            List<Object[]> rows =
-                    articleRepository.countByArticleType(fromTime);
-
-            for (Object[] row : rows) {
-                typeCounts.add(
-                        new ArticleTypeCountDTO(
-                                (String) row[0],
-                                (Long) row[1]
-                        )
-                );
-            }
-
-        } else {
-            // First-time login
-            totalCount = articleRepository.countByActiveTrue();
-        }
-
-        //  Build final response
-        return new ArticleListResponse(lastLogoutTime,
-                totalCount,
-                typeCounts,
-                articles
-        );
-    }
 
 
 }
