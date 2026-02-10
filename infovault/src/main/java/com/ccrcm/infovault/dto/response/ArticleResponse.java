@@ -14,6 +14,7 @@ public class ArticleResponse {
     private String title;
     private String source;
     private String country;
+    private String countryCode; // ISO-2
 
     // article metadata
     private String type;

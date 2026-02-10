@@ -90,20 +90,24 @@ public class ArticleServiceImpl implements ArticleService {
 
         Long userId = 1L; // later from SecurityContext/SSO
 
-        // 1️⃣ Get last session
+        // Get last session
         Optional<UserLoginLog> sessionOpt =
                 userLoginLogRepository.findTopByUserIdOrderByLoginTimeDesc(userId);
 
         LocalDateTime fromTime = null;
+        LocalDateTime lastLogoutTime = null;
 
         if (sessionOpt.isPresent()) {
             UserLoginLog log = sessionOpt.get();
+
+            lastLogoutTime = log.getLogoutTime();
+
             fromTime = (log.getLogoutTime() != null)
                     ? log.getLogoutTime()
                     : log.getLoginTime();
         }
 
-        // 2️⃣ Fetch active articles
+        //  Fetch active articles
         List<ArticleResponse> articles = articleRepository.findByActiveTrue()
                 .stream()
                 .map(ArticleMapper::toResponse)
@@ -112,7 +116,7 @@ public class ArticleServiceImpl implements ArticleService {
         long totalCount;
         List<ArticleTypeCountDTO> typeCounts = new ArrayList<>();
 
-        // 3️⃣ Count logic
+        // Count logic
         if (fromTime != null) {
 
             totalCount = articleRepository.countNewArticles(fromTime);
@@ -134,8 +138,8 @@ public class ArticleServiceImpl implements ArticleService {
             totalCount = articleRepository.countByActiveTrue();
         }
 
-        // 4️⃣ Build final response
-        return new ArticleListResponse(
+        //  Build final response
+        return new ArticleListResponse(lastLogoutTime,
                 totalCount,
                 typeCounts,
                 articles

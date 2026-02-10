@@ -2,6 +2,7 @@ package com.ccrcm.infovault.mapper;
 
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.entity.Article;
+import com.ccrcm.infovault.util.CountryUtil;
 
 public class ArticleMapper {
 
@@ -18,6 +19,7 @@ public class ArticleMapper {
         response.setId(article.getId());
         response.setTitle(article.getTitle());
         response.setSource(article.getSource());
+        response.setCountryCode(CountryUtil.toIso2(article.getCountry())); // Country mapping (name + ISO2)
         response.setCountry(article.getCountry());
         response.setType(article.getArticleType());
         response.setClinicalType(article.getClinicalType());
