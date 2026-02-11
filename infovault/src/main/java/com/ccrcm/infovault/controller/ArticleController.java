@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@RequestMapping("/api/articles")
+@RequestMapping("/infovault/articles")
 @RequiredArgsConstructor
 public class ArticleController {
 
