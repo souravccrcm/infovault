@@ -2,7 +2,6 @@ package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.response.ArticleListResponse;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
-import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.service.HomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

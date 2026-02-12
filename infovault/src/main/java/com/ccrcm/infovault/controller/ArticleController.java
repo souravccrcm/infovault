@@ -1,7 +1,6 @@
 package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
-import com.ccrcm.infovault.dto.response.ArticleListResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.ArticleService;
