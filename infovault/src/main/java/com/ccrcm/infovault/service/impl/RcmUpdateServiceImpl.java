@@ -8,18 +8,20 @@ import com.ccrcm.infovault.repository.ArticleRepository;
 import com.ccrcm.infovault.service.RcmUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true) // ✅ FIX for Lazy loading issue
 public class RcmUpdateServiceImpl implements RcmUpdateService {
 
     private final ArticleRepository articleRepository;
 
-
     @Override
     public ApiResponse<List<RcmUpdateResponse>> getAllRcmUpdateListDetails() {
+
         List<RcmUpdateResponse> articles = articleRepository.findByActiveTrue()
                 .stream()
                 .map(ArticleMapper::toRcmUpdateResponse)
@@ -34,11 +36,18 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
     @Override
     public ApiResponse<RcmUpdateResponse> getRcmUpdateById(Long id) {
+
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
+                .orElseThrow(() ->
+                        new RuntimeException("Article not found with id: " + id)
+                );
 
         RcmUpdateResponse response = ArticleMapper.toRcmUpdateResponse(article);
 
-        return new ApiResponse<>(true, "Article fetched successfully", response);
+        return new ApiResponse<>(
+                true,
+                "Article fetched successfully",
+                response
+        );
     }
 }

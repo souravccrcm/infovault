@@ -59,19 +59,19 @@ public class HomeServiceImpl implements HomeService {
             totalCount = articleRepository.countNewArticles(fromTime);
 
             List<Object[]> rows =
-                    articleRepository.countByArticleType(fromTime);
+                    articleRepository.countByUpdateType(fromTime);
 
             for (Object[] row : rows) {
+
+                String typeName = (String) row[0];
+                Long count = ((Number) row[1]).longValue();
+
                 typeCounts.add(
-                        new ArticleTypeCountDTO(
-                                (String) row[0],
-                                (Long) row[1]
-                        )
+                        new ArticleTypeCountDTO(typeName, count)
                 );
             }
 
         } else {
-            // First-time login
             totalCount = articleRepository.countByActiveTrue();
         }
 

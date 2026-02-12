@@ -1,6 +1,7 @@
 package com.ccrcm.infovault.mapper;
 
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.dto.response.RcmUpdateResponse;
 import com.ccrcm.infovault.entity.Article;
 
 public class ArticleMapper {
@@ -35,4 +36,18 @@ public class ArticleMapper {
                 .updatedAt(article.getUpdatedAt())
                 .build();
     }
+    // ✅ ADD THIS METHOD
+    public static RcmUpdateResponse toRcmUpdateResponse(Article article) {
+
+        return new RcmUpdateResponse(
+                article.getId(),
+                article.getTitle(),
+                article.getSource().getName(),
+                article.getCountry().getName(),
+                article.getUpdateType().getName(),
+                article.getClinicalType().getName()
+        );
+    }
+
+
 }
