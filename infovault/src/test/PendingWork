@@ -1,0 +1,5 @@
+in getAllArticles method from serviceimpl class change userId
+ public ArticleListResponse getAllArticles() {
+Long userId = 1L; // later from SecurityContext/SSO
+}
+-----------------------------------------------------------------

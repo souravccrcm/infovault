@@ -1,4 +1,4 @@
-package com.ccrcm.infovault.Controller;
+package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleUploadRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
@@ -7,14 +7,12 @@ import com.ccrcm.infovault.service.ArticleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 @RestController
-@RequestMapping("/api/articles")
+@RequestMapping("/infovault/articles")
 @RequiredArgsConstructor
 public class ArticleController {
 
@@ -31,4 +29,5 @@ public class ArticleController {
                 articleService.uploadArticle(request, file)
         );
     }
+
 }

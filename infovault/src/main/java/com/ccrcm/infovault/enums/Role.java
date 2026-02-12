@@ -1,4 +1,4 @@
-package com.ccrcm.infovault.entity;
+package com.ccrcm.infovault.enums;
 
 public enum Role {
     ADMIN,
