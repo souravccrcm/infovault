@@ -18,24 +18,28 @@ public class Article extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    private String source;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_id", nullable = false)
+    private Source source;
 
-    @Column(nullable = false)
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
 
-    @Column(name = "article_type")
-    private String articleType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "update_type_id", nullable = false)
+    private UpdateType updateType;
 
-    @Column(name = "clinical_type")
-    private String clinicalType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clinical_type_id", nullable = false)
+    private ClinicalType clinicalType;
 
-    @Column(name = "article_content")
+    @Column(name = "article_content", columnDefinition = "TEXT")
     private String articleContent;
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ArticleStatus status; // DRAFT / PUBLISHED
+    private ArticleStatus status;
 
     @Column(name = "file_name", nullable = false)
     private String fileName;
@@ -47,7 +51,7 @@ public class Article extends BaseEntity {
     private Long fileSize;
 
     @Column(name = "uploaded_by", nullable = false)
-    private Long uploadedBy; // users.id (logical)
+    private Long uploadedBy;
 
     @Column(nullable = false)
     private Boolean active = true;

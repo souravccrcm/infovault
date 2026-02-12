@@ -71,6 +71,7 @@ public class ClinicalTypeServiceImpl implements ClinicalTypeService {
                 .collect(Collectors.toList());
     }
 
+
     private MasterResponse map(ClinicalType entity) {
         MasterResponse response = new MasterResponse();
         response.setId(entity.getId());

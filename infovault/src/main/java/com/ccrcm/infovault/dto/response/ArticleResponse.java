@@ -1,34 +1,38 @@
 package com.ccrcm.infovault.dto.response;
 
 import com.ccrcm.infovault.enums.ArticleStatus;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @Getter
-@Setter
+@Builder
 public class ArticleResponse {
 
     private Long id;
-
     private String title;
-    private String source;
-    private String country;
-    private String countryCode; // ISO-2
 
-    // article metadata
-    private String type;
-    private String clinicalType;
+    private Long sourceId;
+    private String sourceName;
+
+    private Long countryId;
+    private String countryName;
+
+    private Long updateTypeId;
+    private String updateTypeName;
+
+    private Long clinicalTypeId;
+    private String clinicalTypeName;
+
+    private String articleContent;
+
     private ArticleStatus status;
 
-    // file info
     private String fileName;
-    private String filePath;
     private Long fileSize;
 
-    // audit info
     private Long uploadedBy;
-    private boolean active;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
