@@ -84,4 +84,7 @@ CREATE TABLE user_login_logs (
 
     created_at DATETIME2 DEFAULT GETDATE()
 );
+-----------------------------------------11-02-2026---------------------------------------------------------
+ALTER TABLE [infovault].[dbo].[articles]
+ADD article_content NVARCHAR(MAX) NULL;
 

@@ -29,6 +29,9 @@ public class Article extends BaseEntity {
     @Column(name = "clinical_type")
     private String clinicalType;
 
+    @Column(name = "article_content")
+    private String articleContent;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
