@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/infovault/impact-levels")
+@RequestMapping("/impact-levels")
 @RequiredArgsConstructor
 public class ImpactLevelController {
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/infovault/clinical-types")
+@RequestMapping("/clinical-types")
 @RequiredArgsConstructor
 public class ClinicalTypeController {
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/infovault/update-types")
+@RequestMapping("/update-types")
 @RequiredArgsConstructor
 public class UpdateTypeController {
 
