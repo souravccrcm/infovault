@@ -88,3 +88,55 @@ CREATE TABLE user_login_logs (
 ALTER TABLE [infovault].[dbo].[articles]
 ADD article_content NVARCHAR(MAX) NULL;
 
+CREATE TABLE countries (
+    id BIGINT IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    active BIT NOT NULL DEFAULT 1
+);
+
+
+CREATE TABLE update_types (
+    id BIGINT IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    active BIT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE impact_levels (
+    id BIGINT IDENTITY PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    active BIT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE clinical_types (
+    id BIGINT IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    active BIT NOT NULL DEFAULT 1
+);
+
+DROP TABLE article;
+
+CREATE TABLE article (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    title NVARCHAR(255) NOT NULL,
+
+    source_id BIGINT NOT NULL,
+    country_id BIGINT NOT NULL,
+    update_type_id BIGINT NOT NULL,
+    clinical_type_id BIGINT NOT NULL,
+
+    article_content NVARCHAR(MAX),
+
+    status NVARCHAR(50),
+
+    file_name NVARCHAR(255),
+    file_size BIGINT,
+
+    uploaded_by NVARCHAR(100),
+
+    created_at DATETIME2 DEFAULT SYSDATETIME(),
+    updated_at DATETIME2 DEFAULT SYSDATETIME(),
+
+    active BIT DEFAULT 1
+);
+
