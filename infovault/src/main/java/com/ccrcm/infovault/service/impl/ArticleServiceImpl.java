@@ -10,8 +10,10 @@ import com.ccrcm.infovault.repository.*;
 import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
@@ -34,11 +38,17 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleResponse save(ArticleRequest request, MultipartFile file) throws IOException {
 
-        Article article = request.getId() != null
-                ? articleRepository.findById(request.getId())
-                .orElseThrow(() -> new BadRequestException("Article not found"))
-                : new Article();
+        log.info("Saving article. Title: {}", request.getTitle());
 
+        Article article;
+
+        if (request.getId() == null || request.getId() == 0) {
+            article = new Article();
+        } else {
+            article = articleRepository.findById(request.getId())
+                    .orElseThrow(() -> new BadRequestException("Article not found"));
+        }
+        // Fetch related entities
         Source source = sourceRepository.findById(request.getSourceId())
                 .orElseThrow(() -> new BadRequestException("Invalid source"));
 
@@ -51,6 +61,7 @@ public class ArticleServiceImpl implements ArticleService {
         ClinicalType clinicalType = clinicalTypeRepository.findById(request.getClinicalTypeId())
                 .orElseThrow(() -> new BadRequestException("Invalid clinical type"));
 
+        // Set article fields
         article.setTitle(request.getTitle());
         article.setSource(source);
         article.setCountry(country);
@@ -65,22 +76,32 @@ public class ArticleServiceImpl implements ArticleService {
         );
 
         article.setUploadedBy(request.getUploadedBy());
+        article.setActive(true);
 
+        // File Handling
         if (file != null && !file.isEmpty()) {
+            log.info("Uploading file for article: {}", request.getTitle());
+
             String filePath = FileUtil.saveFile(storagePath, file);
+
             article.setFileName(file.getOriginalFilename());
             article.setFilePath(filePath);
             article.setFileSize(file.getSize());
         }
 
-        article.setActive(true);
-
         Article saved = articleRepository.save(article);
+
+        log.info("Article saved successfully. ID: {}", saved.getId());
+
         return ArticleMapper.toResponse(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ArticleResponse getById(Long id) {
+
+        log.info("Fetching article with ID: {}", id);
+
         Article article = articleRepository.findById(id)
                 .filter(Article::getActive)
                 .orElseThrow(() -> new BadRequestException("Article not found"));
@@ -89,7 +110,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ArticleResponse> getAll() {
+
+        log.info("Fetching all active articles");
+
         return articleRepository.findAllByActiveTrue()
                 .stream()
                 .map(ArticleMapper::toResponse)
@@ -98,10 +123,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void delete(Long id) {
+
+        log.info("Soft deleting article with ID: {}", id);
+
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Article not found"));
 
         article.setActive(false);
         articleRepository.save(article);
+
+        log.info("Article soft deleted successfully. ID: {}", id);
     }
 }
