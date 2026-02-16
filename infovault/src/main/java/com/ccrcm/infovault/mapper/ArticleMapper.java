@@ -42,10 +42,10 @@ public class ArticleMapper {
         return new RcmUpdateResponse(
                 article.getId(),
                 article.getTitle(),
-                article.getSource().getName(),
-                article.getCountry().getName(),
-                article.getUpdateType().getName(),
-                article.getClinicalType().getName()
+                article.getSource() != null ? article.getSource().getName() : null,
+                article.getCountry() != null ? article.getCountry().getName() : null,
+                article.getUpdateType() != null ? article.getUpdateType().getName() : null,
+                article.getClinicalType() != null ? article.getClinicalType().getName() : null
         );
     }
 

@@ -15,7 +15,7 @@ public class RcmUpdateResponse {
     private String title;
     private String source;
     private String country;
-    private String type;
+    private String updateType;
     private String clinicalType;
 }
 
