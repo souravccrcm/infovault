@@ -140,3 +140,13 @@ CREATE TABLE article (
     active BIT DEFAULT 1
 );
 
+----------------13-02-2026--------------------------------
+CREATE TABLE sources (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    active BIT NOT NULL DEFAULT 1
+);
+ALTER TABLE sources
+ADD createdAt DATETIME2 NOT NULL DEFAULT SYSDATETIME();
+ALTER TABLE sources
+ADD updatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME();
