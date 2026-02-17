@@ -199,12 +199,15 @@ VALUES
 ('ADMIN', 'Full system access'),
 ('USER', 'Basic user access');
 
+
 INSERT INTO permissions (code, description)
 VALUES
 ('HOME_VIEW', 'Access Home Tab'),
-('DASHBOARD_VIEW', 'Access Dashboard'),
-('REPORTS_VIEW', 'Access Reports'),
-('USER_MANAGEMENT', 'Manage Users');
+('RCM_UPDATES', 'Access Dashboard'),
+('CASE_MANAGEMENT', 'Access Reports'),
+('USER_MANAGEMENT', 'Manage Users'),
+('COMMUNICATIONS', 'Manage COMMUNICATIONS Users'),
+('ARTICLES','Manage Articles');
 
 --giving admin all permissions
 INSERT INTO role_permissions (role_id, permission_id)
@@ -218,7 +221,7 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p
-    ON p.code IN ('HOME_VIEW', 'DASHBOARD_VIEW')
+    ON p.code IN ('HOME_VIEW', 'RCM_UPDATES','CASE_MANAGEMENT')
 WHERE r.name = 'USER';
 --insert admin
 INSERT INTO users (email, first_name, last_name, active, role_id)
