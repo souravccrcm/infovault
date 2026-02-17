@@ -6,14 +6,15 @@ import com.ccrcm.infovault.entity.Country;
 import com.ccrcm.infovault.exception.BadRequestException;
 import com.ccrcm.infovault.repository.CountryRepository;
 import com.ccrcm.infovault.service.CountryService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CountryServiceImpl implements CountryService {
 
     private final CountryRepository repository;
@@ -27,6 +28,7 @@ public class CountryServiceImpl implements CountryService {
 
         Country country = new Country();
         country.setName(request.getName());
+        country.setActive(true);
 
         return map(repository.save(country));
     }
@@ -34,8 +36,13 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public MasterResponse update(Long id, MasterRequest request) {
 
-        Country country = repository.findById(id)
+        Country country = repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new BadRequestException("Country not found"));
+
+        if (repository.existsByNameIgnoreCase(request.getName())
+                && !country.getName().equalsIgnoreCase(request.getName())) {
+            throw new BadRequestException("Country already exists");
+        }
 
         country.setName(request.getName());
 
@@ -45,10 +52,9 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public void delete(Long id) {
 
-        Country country = repository.findById(id)
+        Country country = repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new BadRequestException("Country not found"));
 
-        // Soft delete
         country.setActive(false);
         repository.save(country);
     }
@@ -56,7 +62,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public MasterResponse getById(Long id) {
 
-        Country country = repository.findById(id)
+        Country country = repository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new BadRequestException("Country not found"));
 
         return map(country);
@@ -65,9 +71,8 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public List<MasterResponse> getAll() {
 
-        return repository.findAll()
+        return repository.findByActiveTrue()
                 .stream()
-                .filter(Country::isActive)
                 .map(this::map)
                 .collect(Collectors.toList());
     }

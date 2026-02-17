@@ -22,12 +22,9 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    // ✅ CREATE
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArticleResponse> save(
-            @ParameterObject @ModelAttribute ArticleRequest request,
-            @RequestPart("file") MultipartFile file
-    ) {
+    public ResponseEntity<ArticleResponse> save(@ParameterObject @ModelAttribute ArticleRequest request, @RequestPart("file") MultipartFile file) {
 
         try {
             log.info("Creating article with title: {}", request.getTitle());
@@ -48,7 +45,7 @@ public class ArticleController {
         }
     }
 
-    // ✅ GET BY ID
+
     @GetMapping("/{id}")
     public ResponseEntity<ArticleResponse> getById(@PathVariable Long id) {
 
@@ -71,7 +68,7 @@ public class ArticleController {
         }
     }
 
-    // ✅ GET ALL
+    // GET ALL
     @GetMapping
     public ResponseEntity<List<ArticleResponse>> getAll() {
 
@@ -90,7 +87,7 @@ public class ArticleController {
         }
     }
 
-    // ✅ DELETE
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
