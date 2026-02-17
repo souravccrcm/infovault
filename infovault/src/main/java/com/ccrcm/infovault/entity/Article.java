@@ -34,6 +34,10 @@ public class Article extends BaseEntity {
     @JoinColumn(name = "clinical_type_id", nullable = false)
     private ClinicalType clinicalType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "impact_level_id", nullable = false)
+    private ImpactLevel impactLevel;
+
     @Column(name = "article_content", columnDefinition = "TEXT")
     private String articleContent;
 

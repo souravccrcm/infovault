@@ -26,7 +26,7 @@ public class CountryController {
             log.info("Country created successfully with name: {}", request.getName());
             return response;
         } catch (Exception e) {
-            log.error("Error while creating country", e);
+            log.error("Error while creating country", e.getMessage());
             throw e;
         }
     }

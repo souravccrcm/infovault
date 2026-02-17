@@ -155,3 +155,81 @@ ADD updated_at DATETIME2 NOT NULL DEFAULT SYSDATETIME();
 
 ALTER TABLE articles
 ADD created_at DATETIME2 NOT NULL DEFAULT SYSDATETIME();
+
+
+----------------17-02-2026--------------------------------
+CREATE TABLE users (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    active BIT DEFAULT 1,
+    role_id BIGINT NOT NULL, -- logical reference to roles.id (no FK)
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
+);
+
+
+CREATE TABLE roles (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE, -- ADMIN, USER, MANAGER
+    description VARCHAR(255),
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
+);
+
+
+CREATE TABLE permissions (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    code VARCHAR(100) NOT NULL UNIQUE, -- HOME_VIEW, REPORTS_VIEW
+    description VARCHAR(255),
+    created_at DATETIME2 DEFAULT GETDATE()
+);
+
+
+CREATE TABLE role_permissions (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    role_id BIGINT NOT NULL,       -- logical reference to roles.id
+    permission_id BIGINT NOT NULL  -- logical reference to permissions.id
+);
+
+
+INSERT INTO roles (name, description)
+VALUES
+('ADMIN', 'Full system access'),
+('USER', 'Basic user access');
+
+INSERT INTO permissions (code, description)
+VALUES
+('HOME_VIEW', 'Access Home Tab'),
+('DASHBOARD_VIEW', 'Access Dashboard'),
+('REPORTS_VIEW', 'Access Reports'),
+('USER_MANAGEMENT', 'Manage Users');
+
+--giving admin all permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+CROSS JOIN permissions p
+WHERE r.name = 'ADMIN';
+
+--giving user only home and dashboard view permissions
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p
+    ON p.code IN ('HOME_VIEW', 'DASHBOARD_VIEW')
+WHERE r.name = 'USER';
+--insert admin
+INSERT INTO users (email, first_name, last_name, active, role_id)
+SELECT
+    'admin@infovault.com',
+    'System',
+    'Admin',
+    1,
+    r.id
+FROM roles r
+WHERE r.name = 'ADMIN';
+
+ALTER TABLE [infovault].[dbo].[articles]
+ADD impact_level_id BigInt;

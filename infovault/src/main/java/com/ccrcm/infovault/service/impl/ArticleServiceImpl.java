@@ -31,6 +31,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final CountryRepository countryRepository;
     private final UpdateTypeRepository updateTypeRepository;
     private final ClinicalTypeRepository clinicalTypeRepository;
+    private final ImpactLevelRepository impactLevelRepository;
 
     @Value("${file.storage.path}")
     private String storagePath;
@@ -60,6 +61,8 @@ public class ArticleServiceImpl implements ArticleService {
 
         ClinicalType clinicalType = clinicalTypeRepository.findById(request.getClinicalTypeId())
                 .orElseThrow(() -> new BadRequestException("Invalid clinical type"));
+        ImpactLevel impactLevel= impactLevelRepository.findById(request.getImpactTypeId())
+                .orElseThrow(() -> new BadRequestException("Invalid impact level"));
 
         // Set article fields
         article.setTitle(request.getTitle());
@@ -67,6 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
         article.setCountry(country);
         article.setUpdateType(updateType);
         article.setClinicalType(clinicalType);
+        article.setImpactLevel(impactLevel);
         article.setArticleContent(request.getArticleContent());
 
         article.setStatus(

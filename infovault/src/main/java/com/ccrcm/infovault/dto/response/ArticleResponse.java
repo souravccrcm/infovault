@@ -25,6 +25,9 @@ public class ArticleResponse {
     private Long clinicalTypeId;
     private String clinicalTypeName;
 
+    private Long impactTypeId;
+    private String impactTypeName;
+
     private String articleContent;
 
     private ArticleStatus status;

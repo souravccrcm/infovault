@@ -27,6 +27,9 @@ public class ArticleRequest {
     @NotNull
     private Long clinicalTypeId;
 
+    @NotNull
+    private Long impactTypeId;
+
     private String articleContent;
 
     private ArticleStatus status;
