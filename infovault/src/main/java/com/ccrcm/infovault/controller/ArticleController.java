@@ -2,10 +2,12 @@ package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,91 +24,83 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-
+    // CREATE / UPDATE
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArticleResponse> save(@ParameterObject @ModelAttribute ArticleRequest request, @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<ArticleResponse>> save(
+            @ParameterObject @ModelAttribute ArticleRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
 
-        try {
-            log.info("Creating article with title: {}", request.getTitle());
+        log.info("Creating/Updating article. Title: {}", request.getTitle());
 
-            ArticleResponse response = articleService.save(request, file);
+        ArticleResponse response = articleService.save(request, file);
 
-            log.info("Article created successfully with ID: {}", response.getId());
-
-            return ResponseEntity.ok(response);
-
-        } catch (IOException e) {
-            log.error("File upload failed for article: {}", request.getTitle(), e);
-            return ResponseEntity.internalServerError().build();
-
-        } catch (Exception e) {
-            log.error("Error occurred while creating article", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Article saved successfully",
+                        response
+                )
+        );
     }
 
-
+    // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ArticleResponse>> getById(@PathVariable Long id) {
 
-        try {
-            log.info("Fetching article with ID: {}", id);
+        log.info("Fetching article with ID: {}", id);
 
-            ArticleResponse response = articleService.getById(id);
+        ArticleResponse response = articleService.getById(id);
 
-            log.info("Article fetched successfully for ID: {}", id);
-
-            return ResponseEntity.ok(response);
-
-        } catch (RuntimeException e) {
-            log.error("Article not found with ID: {}", id, e);
-            return ResponseEntity.notFound().build();
-
-        } catch (Exception e) {
-            log.error("Error occurred while fetching article with ID: {}", id, e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Article fetched successfully",
+                        response
+                )
+        );
     }
 
-    // GET ALL
+    //  GET ALL
     @GetMapping
-    public ResponseEntity<List<ArticleResponse>> getAll() {
+    public ResponseEntity<ApiResponse<List<ArticleResponse>>> getAll() {
 
-        try {
-            log.info("Fetching all articles");
+        log.info("Fetching all articles");
 
-            List<ArticleResponse> articles = articleService.getAll();
+        List<ArticleResponse> articles = articleService.getAll();
 
-            log.info("Fetched {} articles successfully", articles.size());
-
-            return ResponseEntity.ok(articles);
-
-        } catch (Exception e) {
-            log.error("Error occurred while fetching all articles", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Articles fetched successfully",
+                        articles
+                )
+        );
     }
 
-    // DELETE
+    // DELETE (Soft Delete)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
 
-        try {
-            log.info("Deleting article with ID: {}", id);
+        log.info("Deleting article with ID: {}", id);
 
-            articleService.delete(id);
+        articleService.delete(id);
 
-            log.info("Article deleted successfully with ID: {}", id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Article deleted successfully",
+                        null
+                )
+        );
+    }
 
-            return ResponseEntity.noContent().build();
+    // DOWNLOAD FILE
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {
 
-        } catch (RuntimeException e) {
-            log.error("Article not found for deletion with ID: {}", id, e);
-            return ResponseEntity.notFound().build();
+        log.info("Downloading file for article ID: {}", id);
 
-        } catch (Exception e) {
-            log.error("Error occurred while deleting article with ID: {}", id, e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return articleService.downloadFile(id);
     }
 }

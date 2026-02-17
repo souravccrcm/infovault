@@ -9,14 +9,20 @@ import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.*;
 import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.util.FileUtil;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,5 +143,32 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.save(article);
 
         log.info("Article soft deleted successfully. ID: {}", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Resource> downloadFile(Long id) throws IOException {
+
+
+        Article article = articleRepository.findById(id)
+                .filter(Article::getActive)
+                .orElseThrow(() -> new BadRequestException("Article not found"));
+
+        if (article.getFilePath() == null || article.getFileName() == null) {
+            throw new BadRequestException("No file associated with this article");
+        }
+
+        Path path = Paths.get(article.getFilePath());
+        UrlResource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists()) {
+            throw new BadRequestException("File not found on server");
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + article.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                .body(resource);
     }
 }
