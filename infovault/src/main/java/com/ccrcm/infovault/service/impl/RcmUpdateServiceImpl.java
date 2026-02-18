@@ -7,6 +7,8 @@ import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.ArticleRepository;
 import com.ccrcm.infovault.service.RcmUpdateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,22 +22,23 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
     private final ArticleRepository articleRepository;
 
     @Override
-    public ApiResponse<List<RcmUpdateResponse>> getAllRcmUpdateListDetails() {
+    public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateListDetails() {
 
         List<RcmUpdateResponse> articles = articleRepository.findByActiveTrue()
                 .stream()
                 .map(ArticleMapper::toRcmUpdateResponse)
                 .toList();
 
-        return new ApiResponse<>(
+        ApiResponse<List<RcmUpdateResponse>> body = new ApiResponse<>(
                 true,
                 "Rcm Updated fetched successfully",
                 articles
         );
+        return ResponseEntity.ok(body);
     }
 
     @Override
-    public ApiResponse<RcmUpdateResponse> getRcmUpdateById(Long id) {
+    public ResponseEntity<ApiResponse<RcmUpdateResponse>> getRcmUpdateById(Long id) {
 
         Article article = articleRepository.findById(id)
                 .orElseThrow(() ->
@@ -44,10 +47,11 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
         RcmUpdateResponse response = ArticleMapper.toRcmUpdateResponse(article);
 
-        return new ApiResponse<>(
+        ApiResponse<RcmUpdateResponse> body = new ApiResponse<>(
                 true,
                 "Article fetched successfully",
                 response
         );
+        return ResponseEntity.ok(body);
     }
 }

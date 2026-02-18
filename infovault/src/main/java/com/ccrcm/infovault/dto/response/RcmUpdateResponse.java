@@ -23,7 +23,6 @@ public class RcmUpdateResponse {
     private String clinicalType;
     private String articleContent;
     private String fileBase64; // add this
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime createdAt;
     private String impactLevel;
     private String fileName;
