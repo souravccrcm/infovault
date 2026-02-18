@@ -132,17 +132,29 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new BadRequestException("No IDs provided for deletion");
+        }
 
-        log.info("Soft deleting article with ID: {}", id);
+        log.info("Soft deleting articles with IDs: {}", ids);
 
-        Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Article not found"));
+        List<Article> articles = articleRepository.findAllById(ids);
+        if (articles.isEmpty()) {
+            throw new BadRequestException("No matching articles found for provided IDs");
+        }
 
-        article.setActive(false);
-        articleRepository.save(article);
+        // Validate that all requested IDs were found (optional strict behavior)
+        if (articles.size() != ids.size()) {
+            List<Long> foundIds = articles.stream().map(Article::getId).collect(Collectors.toList());
+            List<Long> missing = ids.stream().filter(id -> !foundIds.contains(id)).collect(Collectors.toList());
+            throw new BadRequestException("Articles not found for IDs: " + missing);
+        }
 
-        log.info("Article soft deleted successfully. ID: {}", id);
+        articles.forEach(article -> article.setActive(false));
+        articleRepository.saveAll(articles);
+
+        log.info("Articles deleted successfully. IDs: {}", ids);
     }
 
     @Override

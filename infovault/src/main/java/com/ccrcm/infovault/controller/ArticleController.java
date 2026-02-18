@@ -78,18 +78,18 @@ public class ArticleController {
         );
     }
 
-    // DELETE (Soft Delete)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+    // BULK DELETE - delete multiple articles by IDs
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> deleteByIds(@RequestParam("ids") List<Long> ids) {
 
-        log.info("Deleting article with ID: {}", id);
+        log.info("Deleting articles with IDs: {}", ids);
 
-        articleService.delete(id);
+        articleService.deleteByIds(ids);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
-                        "Article deleted successfully",
+                        "Articles deleted successfully",
                         null
                 )
         );
