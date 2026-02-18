@@ -62,8 +62,12 @@ public class ArticleMapper {
                 article.getUpdateType() != null ? article.getUpdateType().getName() : null,
                 article.getClinicalType() != null ? article.getClinicalType().getName() : null,
                 article.getArticleContent() != null ? article.getArticleContent() : null,
-                base64File // return base64
-        );
+                base64File, // return base64
+                article.getCreatedAt() != null ? article.getCreatedAt() : null,
+                article.getImpactLevel() != null ? article.getImpactLevel().getName() : null,
+                article.getFileName(),
+                article.getFileSize()
+                );
     }
 
 
