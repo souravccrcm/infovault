@@ -41,13 +41,18 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
        s.name,
        c.name,
        u.name,
-       ct.name
+       ct.name,
+       a.createdAt,
+       il.name,
+       a.fileName,
+       a.fileSize
    )
    FROM Article a
    JOIN a.source s
    JOIN a.country c
    JOIN a.updateType u
    JOIN a.clinicalType ct
+   JOIN a.impactLevel il
    WHERE a.active = true
 """)
     List<RcmUpdateResponse> fetchRcmUpdates();
