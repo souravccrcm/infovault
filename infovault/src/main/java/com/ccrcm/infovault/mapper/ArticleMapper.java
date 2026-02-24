@@ -27,6 +27,8 @@ public class ArticleMapper {
 
                 .clinicalTypeId(article.getClinicalType().getId())
                 .clinicalTypeName(article.getClinicalType().getName())
+                .impactTypeId(article.getImpactLevel().getId())
+                .impactTypeName(article.getImpactLevel().getName())
 
                 .articleContent(article.getArticleContent())
                 .status(article.getStatus())
