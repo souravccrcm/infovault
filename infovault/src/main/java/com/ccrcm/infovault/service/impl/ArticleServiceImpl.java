@@ -158,6 +158,19 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public void turnOffStatus(Long id) {
+        log.info("Turning off status for article ID: {}", id);
+        Article article = articleRepository.findById(id)
+                .filter(Article::getActive)
+                .orElseThrow(() -> new BadRequestException("Article not found"));
+
+        article.setStatus(ArticleStatus.ARCHIVED);
+        articleRepository.save(article);
+
+        log.info("Article status set to ARCHIVED. ID: {}", id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Resource> downloadFile(Long id) throws IOException {
 

@@ -103,4 +103,12 @@ public class ArticleController {
 
         return articleService.downloadFile(id);
     }
+
+    // TURN OFF STATUS (set to ARCHIVED)
+    @PatchMapping("/{id}/status/off")
+    public ResponseEntity<ApiResponse<Void>> turnOffStatus(@PathVariable Long id) {
+        log.info("Turning off status for article ID: {}", id);
+        articleService.turnOffStatus(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Article status turned off (ARCHIVED) successfully", null));
+    }
 }

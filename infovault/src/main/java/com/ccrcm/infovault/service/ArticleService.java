@@ -19,5 +19,7 @@ public interface ArticleService {
 
     void deleteByIds(List<Long> id);
 
+    void turnOffStatus(Long id);
+
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ArticleRequest {
-
+    @NotNull(message = "ID is required for update operations")
     private Long id;
 
     @NotBlank
@@ -35,5 +35,5 @@ public class ArticleRequest {
     private ArticleStatus status;
 
     @NotNull
-    private Long uploadedBy; // From frontend (temporary approach)
+    private Long uploadedBy;
 }
