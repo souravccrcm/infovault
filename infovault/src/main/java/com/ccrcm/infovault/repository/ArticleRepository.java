@@ -35,6 +35,23 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Object[]> countByUpdateType(@Param("fromTime") LocalDateTime fromTime);
 
     @Query("""
+        SELECT a.country.name, COUNT(a)
+        FROM Article a
+        WHERE a.active = true
+          AND a.createdAt > :fromTime
+        GROUP BY a.country.name
+    """)
+    List<Object[]> countByCountrySince(@Param("fromTime") LocalDateTime fromTime);
+
+    @Query("""
+        SELECT a.country.name, COUNT(a)
+        FROM Article a
+        WHERE a.active = true
+        GROUP BY a.country.name
+    """)
+    List<Object[]> countByCountryActive();
+
+    @Query("""
    SELECT new com.ccrcm.infovault.dto.response.RcmUpdateResponse(
        a.id,
        a.title,
