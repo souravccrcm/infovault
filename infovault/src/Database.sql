@@ -236,3 +236,18 @@ WHERE r.name = 'ADMIN';
 
 ALTER TABLE [infovault].[dbo].[articles]
 ADD impact_level_id BigInt;
+
+----------------------------------------/25/02/2026----------------------------------------------------------
+
+CREATE TABLE notifications (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+
+    is_read BIT NOT NULL DEFAULT 0,
+    active BIT NOT NULL DEFAULT 1,
+
+    created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+    updated_at DATETIME2 NULL
+);
