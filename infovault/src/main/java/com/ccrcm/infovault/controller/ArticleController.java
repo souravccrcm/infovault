@@ -4,6 +4,7 @@ import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
+import com.ccrcm.infovault.dto.request.UpdateArticleStatusRequest;
 import com.ccrcm.infovault.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,11 +106,13 @@ public class ArticleController {
         return articleService.downloadFile(id);
     }
 
-    // TURN OFF STATUS (set to ARCHIVED)
+    // CHANGE STATUS
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id ,@PathVariable ArticleStatus status ) {
-        log.info("Turning off status for article ID: {}", id);
-        articleService.changeStatus(id,status);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Article status turned off (ARCHIVED) successfully", null));
+    public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id, @RequestBody UpdateArticleStatusRequest request) {
+        log.info("Updating status for article ID: {} to {}", id, request.getStatus());
+        articleService.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok(new ApiResponse<>(true, "Article status updated successfully", null));
     }
+
+
 }

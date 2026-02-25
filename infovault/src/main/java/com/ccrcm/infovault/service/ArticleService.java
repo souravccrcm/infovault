@@ -20,7 +20,7 @@ public interface ArticleService {
 
     void deleteByIds(List<Long> id);
 
-    void changeStatus(Long id, ArticleStatus status);
+    void updateStatus(Long id, String status);
 
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
 }
