@@ -2,6 +2,7 @@ package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -105,10 +106,10 @@ public class ArticleController {
     }
 
     // TURN OFF STATUS (set to ARCHIVED)
-    @PatchMapping("/{id}/status/off")
-    public ResponseEntity<ApiResponse<Void>> turnOffStatus(@PathVariable Long id) {
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id ,@PathVariable ArticleStatus status ) {
         log.info("Turning off status for article ID: {}", id);
-        articleService.turnOffStatus(id);
+        articleService.changeStatus(id,status);
         return ResponseEntity.ok(new ApiResponse<>(true, "Article status turned off (ARCHIVED) successfully", null));
     }
 }
