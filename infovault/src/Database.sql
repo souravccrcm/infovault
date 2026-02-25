@@ -251,3 +251,8 @@ CREATE TABLE notifications (
     created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
     updated_at DATETIME2 NULL
 );
+
+truncate table articles;
+ALTER TABLE articles ALTER COLUMN status INT NOT NULL;
+
+

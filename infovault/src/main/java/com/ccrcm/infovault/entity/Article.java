@@ -1,5 +1,6 @@
 package com.ccrcm.infovault.entity;
 
+import com.ccrcm.infovault.converter.ArticleStatusConverter;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Article extends BaseEntity {
     @Column(name = "article_content", columnDefinition = "TEXT")
     private String articleContent;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ArticleStatusConverter.class)
     @Column(nullable = false)
     private ArticleStatus status;
 
