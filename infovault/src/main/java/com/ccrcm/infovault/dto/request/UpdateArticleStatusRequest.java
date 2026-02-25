@@ -1,11 +1,12 @@
 
 package com.ccrcm.infovault.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import com.ccrcm.infovault.enums.ArticleStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class UpdateArticleStatusRequest {
-    @NotBlank(message = "Status is required")
-    private String status;
+    @NotNull(message = "Status is required")
+    private ArticleStatus status;
 }

@@ -158,10 +158,10 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void updateStatus(Long id, String status) {
+    public void updateStatus(Long id, ArticleStatus status) {
         log.info("Updating status for article ID: {} to {}", id, status);
 
-        if (status == null || status.trim().isEmpty()) {
+        if (status == null) {
             throw new BadRequestException("Status is required");
         }
 
@@ -169,17 +169,10 @@ public class ArticleServiceImpl implements ArticleService {
                 .filter(Article::getActive)
                 .orElseThrow(() -> new BadRequestException("Article not found"));
 
-        ArticleStatus newStatus;
-        try {
-            newStatus = ArticleStatus.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Invalid status: " + status + ". Allowed values: " + java.util.Arrays.toString(ArticleStatus.values()));
-        }
-
-        article.setStatus(newStatus);
+        article.setStatus(status);
         articleRepository.save(article);
 
-        log.info("Article status updated. ID: {} -> {}", id, newStatus);
+        log.info("Article status updated. ID: {} -> {}", id, status);
     }
 
     @Override
