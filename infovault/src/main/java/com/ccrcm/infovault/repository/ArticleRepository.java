@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 @Repository
@@ -74,4 +75,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 """)
     List<RcmUpdateResponse> fetchRcmUpdates();
     long countByActiveTrue();
+
+
+    List<Article> findByCountryIdAndActiveTrueOrderByCreatedAtDesc(
+            Long countryId,
+            Pageable pageable
+    );
 }
