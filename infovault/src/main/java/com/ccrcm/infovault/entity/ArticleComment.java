@@ -22,11 +22,9 @@ public class ArticleComment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private ArticleComment parent;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(name = "user_name", nullable = false)
-    private String userName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;

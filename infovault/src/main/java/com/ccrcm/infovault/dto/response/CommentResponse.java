@@ -13,6 +13,7 @@ public class CommentResponse {
     private Long id;
     private String userName;
     private String content;
+    private Long userId;
     private Boolean isAdminReply;
     private LocalDateTime createdAt;
     private List<CommentResponse> replies;
