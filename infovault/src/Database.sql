@@ -255,7 +255,27 @@ CREATE TABLE notifications (
 truncate table articles;
 ALTER TABLE articles ALTER COLUMN status INT NOT NULL;
 
+-------------------------------------------------26/02/2026-------------------------
+CREATE TABLE article_image (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    article_id BIGINT NOT NULL,
+    file_name VARCHAR(255),
+    file_path VARCHAR(500),
+    file_size BIGINT,
+    active BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE()
+);
 
+CREATE TABLE article_video (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    article_id BIGINT NOT NULL,
+    file_name VARCHAR(255),
+    file_path VARCHAR(500),
+    file_size BIGINT,
+    active BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE()
+
+);
 
 ----------------------------------------/26/02/2026----------------------------------------------------------
 

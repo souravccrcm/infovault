@@ -1,6 +1,7 @@
 package com.ccrcm.infovault.service;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
+import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import org.springframework.core.io.Resource;
@@ -12,7 +13,12 @@ import java.util.List;
 
 public interface ArticleService {
 
-    ArticleResponse save(ArticleRequest request, MultipartFile file) throws IOException;
+    ArticleResponse save(
+            ArticleRequest request,
+            MultipartFile file,
+            List<MultipartFile> images,
+            List<MultipartFile> videos
+    ) throws IOException;
 
     ArticleResponse getById(Long id);
 
@@ -23,4 +29,6 @@ public interface ArticleService {
     void updateStatus(Long id, ArticleStatus status);
 
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
+
+    ArticleMediaResponse getMediaByArticleId(Long articleId);
 }

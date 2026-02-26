@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "articles")
 @Getter
@@ -60,4 +63,16 @@ public class Article extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    // Images
+    @OneToMany(mappedBy = "article",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<ArticleImage> images = new ArrayList<>();
+
+    // Videos
+    @OneToMany(mappedBy = "article",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<ArticleVideo> videos = new ArrayList<>();
 }

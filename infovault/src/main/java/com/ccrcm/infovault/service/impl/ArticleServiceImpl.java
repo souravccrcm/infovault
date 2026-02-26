@@ -1,7 +1,9 @@
 package com.ccrcm.infovault.service.impl;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
+import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.entity.*;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.exception.BadRequestException;
@@ -43,7 +45,8 @@ public class ArticleServiceImpl implements ArticleService {
     private String storagePath;
 
     @Override
-    public ArticleResponse save(ArticleRequest request, MultipartFile file) throws IOException {
+    public ArticleResponse save(ArticleRequest request, MultipartFile file, List<MultipartFile> images,
+                                List<MultipartFile> videos) throws IOException {
 
         log.info("Saving article. Title: {}", request.getTitle());
 
@@ -92,7 +95,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (file != null && !file.isEmpty()) {
             log.info("Uploading file for article: {}", request.getTitle());
 
-            String filePath = FileUtil.saveFile(storagePath, file);
+            String filePath = FileUtil.saveDocument(storagePath, file);
 
             article.setFileName(file.getOriginalFilename());
             article.setFilePath(filePath);
@@ -103,7 +106,54 @@ public class ArticleServiceImpl implements ArticleService {
 
         log.info("Article saved successfully. ID: {}", saved.getId());
 
-        return ArticleMapper.toResponse(saved);
+        Long articleId = saved.getId();
+
+        // ================= IMAGE UPLOAD =================
+        if (images != null && !images.isEmpty()) {
+
+            for (MultipartFile img : images) {
+
+                if (!img.isEmpty()) {
+
+                    String imagePath = FileUtil.saveImage(storagePath, articleId, img);
+
+                    ArticleImage image = new ArticleImage();
+                    image.setArticle(saved);
+                    image.setFileName(articleId + "_" + img.getOriginalFilename());
+                    image.setFilePath(imagePath);
+                    image.setFileSize(img.getSize());
+                    image.setActive(true);
+
+                    saved.getImages().add(image);
+                }
+            }
+        }
+
+// ================= VIDEO UPLOAD =================
+        if (videos != null && !videos.isEmpty()) {
+
+            for (MultipartFile video : videos) {
+
+                if (!video.isEmpty()) {
+
+                    String videoPath = FileUtil.saveVideo(storagePath, articleId, video);
+
+                    ArticleVideo articleVideo = new ArticleVideo();
+                    articleVideo.setArticle(saved);
+                    articleVideo.setFileName(articleId + "_" + video.getOriginalFilename());
+                    articleVideo.setFilePath(videoPath);
+                    articleVideo.setFileSize(video.getSize());
+                    articleVideo.setActive(true);
+
+                    saved.getVideos().add(articleVideo);
+                }
+            }
+        }
+//===================================================
+        // Save again (Cascade saves children)
+        Article finalSaved = articleRepository.save(saved);
+
+        return ArticleMapper.toResponse(finalSaved);
     }
 
     @Override
@@ -200,5 +250,47 @@ public class ArticleServiceImpl implements ArticleService {
                         "attachment; filename=\"" + article.getFileName() + "\"")
                 .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
                 .body(resource);
+    }
+
+    @Override
+    public ArticleMediaResponse getMediaByArticleId(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BadRequestException("Article not found"));
+
+        ArticleMediaResponse response = new ArticleMediaResponse();
+        response.setArticleId(articleId);
+
+        // ================= IMAGES =================
+        List<MediaResponse> imageList = article.getImages()
+                .stream()
+                .filter(ArticleImage::getActive)
+                .map(img -> {
+                    MediaResponse media = new MediaResponse();
+                    media.setId(img.getId());
+                    media.setFileName(img.getFileName());
+                    media.setFilePath(img.getFilePath());
+                    media.setFileSize(img.getFileSize());
+                    return media;
+                })
+                .toList();
+
+        // ================= VIDEOS =================
+        List<MediaResponse> videoList = article.getVideos()
+                .stream()
+                .filter(ArticleVideo::getActive)
+                .map(video -> {
+                    MediaResponse media = new MediaResponse();
+                    media.setId(video.getId());
+                    media.setFileName(video.getFileName());
+                    media.setFilePath(video.getFilePath());
+                    media.setFileSize(video.getFileSize());
+                    return media;
+                })
+                .toList();
+
+        response.setImages(imageList);
+        response.setVideos(videoList);
+
+        return response;
     }
 }
