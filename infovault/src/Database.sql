@@ -256,3 +256,30 @@ truncate table articles;
 ALTER TABLE articles ALTER COLUMN status INT NOT NULL;
 
 
+
+----------------------------------------/26/02/2026----------------------------------------------------------
+
+CREATE TABLE article_comments (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    article_id BIGINT NOT NULL,
+    parent_id BIGINT NULL,
+    user_id BIGINT NOT NULL,
+    user_name NVARCHAR(255) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    is_admin_reply BIT NOT NULL DEFAULT 0,
+    active BIT NOT NULL DEFAULT 1,
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 NULL,
+);
+
+
+CREATE INDEX idx_comments_article_id
+ON article_comments(article_id);
+
+CREATE INDEX idx_comments_parent_id
+ON article_comments(parent_id);
+
+CREATE INDEX idx_comments_active
+ON article_comments(active);
+
+
