@@ -95,4 +95,30 @@ public class MediaServiceImpl implements MediaService {
 
         return new UrlResource(path.toUri());
     }
+
+    @Override
+    public void deleteImage(Long id) {
+        ArticleImage image = articleImageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        if (Boolean.FALSE.equals(image.getActive())) {
+            throw new RuntimeException("Image already deleted");
+        }
+
+        image.setActive(false);
+        articleImageRepository.save(image);
+    }
+
+    @Override
+    public void deleteVideo(Long id) {
+        ArticleVideo video = articleVideoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Video not found"));
+
+        if (Boolean.FALSE.equals(video.getActive())) {
+            throw new RuntimeException("Video already deleted");
+        }
+
+        video.setActive(false);
+        articleVideoRepository.save(video);
+    }
 }

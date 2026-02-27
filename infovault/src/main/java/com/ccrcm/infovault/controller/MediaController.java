@@ -12,10 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,6 +61,18 @@ public class MediaController {
                 .contentType(MediaType.parseMediaType(
                         Files.probeContentType(path)))
                 .body(resource);
+    }
+
+    @DeleteMapping("/delete-image/{id}")
+    public ResponseEntity<String> softDeleteImage(@PathVariable Long id) {
+        mediaService.deleteImage(id);
+        return ResponseEntity.ok("Image deleted successfully");
+    }
+
+    @DeleteMapping("/delete-video/{id}")
+    public ResponseEntity<String> softDeleteVideo(@PathVariable Long id) {
+        mediaService.deleteVideo(id);
+        return ResponseEntity.ok("Video deleted successfully");
     }
 }
 

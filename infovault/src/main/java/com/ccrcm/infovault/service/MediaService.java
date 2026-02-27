@@ -13,4 +13,8 @@ public interface MediaService {
     Resource getImageById(Long id) throws MalformedURLException;
 
     Resource getVideoById(Long id) throws MalformedURLException;
+
+    void deleteImage(Long id);
+
+    void deleteVideo(Long id);
 }
