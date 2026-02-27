@@ -7,6 +7,7 @@ import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.dto.request.UpdateArticleStatusRequest;
 import com.ccrcm.infovault.service.ArticleService;
+import com.ccrcm.infovault.service.MediaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -26,6 +27,9 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+
+    private final MediaService mediaService;
+
 
     // CREATE / UPDATE
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -117,14 +121,33 @@ public class ArticleController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Article status updated successfully", null));
     }
 
-    @GetMapping("/media/{articleId}")
+//    @GetMapping("/media/{articleId}")
+//    public ResponseEntity<ArticleMediaResponse> getArticleMedia(
+//            @PathVariable Long articleId) {
+//
+//        ArticleMediaResponse response =
+//                articleService.getMediaByArticleId(articleId);
+//
+//        return ResponseEntity.ok(response);
+//    }
+
+    @GetMapping("/{articleId}/media")
     public ResponseEntity<ArticleMediaResponse> getArticleMedia(
             @PathVariable Long articleId) {
 
-        ArticleMediaResponse response =
-                articleService.getMediaByArticleId(articleId);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                mediaService.getMediaByArticleId(articleId)
+        );
     }
+
+//@GetMapping("/image/{id}")
+//public ResponseEntity<Resource> getImage(@PathVariable Long id) throws IOException {
+//    return mediaService.getImageById(id);
+//}
+//
+//    @GetMapping("/video/{id}")
+//    public ResponseEntity<Resource> getVideo(@PathVariable Long id) throws IOException {
+//        return mediaService.getVideoById(id);
+//    }
 
 }

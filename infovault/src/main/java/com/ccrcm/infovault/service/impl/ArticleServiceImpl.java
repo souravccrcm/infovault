@@ -252,45 +252,45 @@ public class ArticleServiceImpl implements ArticleService {
                 .body(resource);
     }
 
-    @Override
-    public ArticleMediaResponse getMediaByArticleId(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BadRequestException("Article not found"));
-
-        ArticleMediaResponse response = new ArticleMediaResponse();
-        response.setArticleId(articleId);
-
-        // ================= IMAGES =================
-        List<MediaResponse> imageList = article.getImages()
-                .stream()
-                .filter(ArticleImage::getActive)
-                .map(img -> {
-                    MediaResponse media = new MediaResponse();
-                    media.setId(img.getId());
-                    media.setFileName(img.getFileName());
-                    media.setFilePath(img.getFilePath());
-                    media.setFileSize(img.getFileSize());
-                    return media;
-                })
-                .toList();
-
-        // ================= VIDEOS =================
-        List<MediaResponse> videoList = article.getVideos()
-                .stream()
-                .filter(ArticleVideo::getActive)
-                .map(video -> {
-                    MediaResponse media = new MediaResponse();
-                    media.setId(video.getId());
-                    media.setFileName(video.getFileName());
-                    media.setFilePath(video.getFilePath());
-                    media.setFileSize(video.getFileSize());
-                    return media;
-                })
-                .toList();
-
-        response.setImages(imageList);
-        response.setVideos(videoList);
-
-        return response;
-    }
+//    @Override
+//    public ArticleMediaResponse getMediaByArticleId(Long articleId) {
+//        Article article = articleRepository.findById(articleId)
+//                .orElseThrow(() -> new BadRequestException("Article not found"));
+//
+//        ArticleMediaResponse response = new ArticleMediaResponse();
+//        response.setArticleId(articleId);
+//
+//        // ================= IMAGES =================
+//        List<MediaResponse> imageList = article.getImages()
+//                .stream()
+//                .filter(ArticleImage::getActive)
+//                .map(img -> {
+//                    MediaResponse media = new MediaResponse();
+//                    media.setId(img.getId());
+//                    media.setFileName(img.getFileName());
+//                    media.setFilePath(img.getFilePath());
+//                    media.setFileSize(img.getFileSize());
+//                    return media;
+//                })
+//                .toList();
+//
+//        // ================= VIDEOS =================
+//        List<MediaResponse> videoList = article.getVideos()
+//                .stream()
+//                .filter(ArticleVideo::getActive)
+//                .map(video -> {
+//                    MediaResponse media = new MediaResponse();
+//                    media.setId(video.getId());
+//                    media.setFileName(video.getFileName());
+//                    media.setFilePath(video.getFilePath());
+//                    media.setFileSize(video.getFileSize());
+//                    return media;
+//                })
+//                .toList();
+//
+//        response.setImages(imageList);
+//        response.setVideos(videoList);
+//
+//        return response;
+//    }
 }

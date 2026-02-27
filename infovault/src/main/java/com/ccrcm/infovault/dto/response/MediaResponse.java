@@ -6,6 +6,6 @@ import lombok.Data;
 public class MediaResponse {
     private Long id;
     private String fileName;
-    private String filePath;
+    private String url;
     private Long fileSize;
 }
