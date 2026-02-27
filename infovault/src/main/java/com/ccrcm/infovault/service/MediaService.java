@@ -8,7 +8,5 @@ import java.io.IOException;
 
 public interface MediaService {
     ArticleMediaResponse getMediaByArticleId(Long articleId);
-//    ResponseEntity<Resource> getImageById(Long id) throws IOException;
-//
-//    ResponseEntity<Resource> getVideoById(Long id) throws IOException;
+
 }

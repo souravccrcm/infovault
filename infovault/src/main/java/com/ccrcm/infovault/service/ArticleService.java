@@ -32,5 +32,5 @@ public interface ArticleService {
 
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
 
-//    ArticleMediaResponse getMediaByArticleId(Long articleId);
+
 }

@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface ArticleImageRepository extends JpaRepository<ArticleImage, Long> {
 
-    // Optional: Get all active images of an article
     List<ArticleImage> findByArticleIdAndActiveTrue(Long articleId);
 
 }

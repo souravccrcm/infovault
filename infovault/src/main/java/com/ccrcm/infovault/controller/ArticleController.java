@@ -120,16 +120,6 @@ public class ArticleController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Article status updated successfully", null));
     }
 
-//    @GetMapping("/media/{articleId}")
-//    public ResponseEntity<ArticleMediaResponse> getArticleMedia(
-//            @PathVariable Long articleId) {
-//
-//        ArticleMediaResponse response =
-//                articleService.getMediaByArticleId(articleId);
-//
-//        return ResponseEntity.ok(response);
-//    }
-
     @GetMapping("/{articleId}/media")
     public ResponseEntity<ArticleMediaResponse> getArticleMedia(
             @PathVariable Long articleId) {
