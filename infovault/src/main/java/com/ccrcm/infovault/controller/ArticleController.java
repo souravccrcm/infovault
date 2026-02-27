@@ -145,22 +145,4 @@ public class ArticleController {
         );
     }
 
-    @GetMapping("/{articleId}/images/raw")
-    public ResponseEntity<Resource> getFirstImageByArticle(
-            @PathVariable Long articleId) throws IOException {
-
-        ArticleImage image = articleImageRepository
-                .findByArticleIdAndActiveTrue(articleId)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Image not found"));
-
-        Path path = Paths.get(image.getFilePath());
-        Resource resource = new UrlResource(path.toUri());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(resource);
-    }
-
 }

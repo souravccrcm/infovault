@@ -11,6 +11,7 @@ import lombok.Setter;
 @Data
 public class MediaResponse {
     private Long id;
+    private String type;
     private String fileName;
     private String url;
     private Long fileSize;
