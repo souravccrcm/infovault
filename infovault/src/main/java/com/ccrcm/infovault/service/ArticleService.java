@@ -22,6 +22,8 @@ public interface ArticleService {
 
     ArticleResponse getById(Long id);
 
+    List<ArticleResponse> getTop10ByCountry(Long countryId);
+
     List<ArticleResponse> getAll();
 
     void deleteByIds(List<Long> id);

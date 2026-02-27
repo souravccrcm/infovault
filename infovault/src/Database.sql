@@ -302,4 +302,6 @@ ON article_comments(parent_id);
 CREATE INDEX idx_comments_active
 ON article_comments(active);
 
+ALTER TABLE article_comments
+DROP COLUMN user_name;
 

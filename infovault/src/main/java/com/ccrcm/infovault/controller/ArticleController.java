@@ -3,7 +3,6 @@ package com.ccrcm.infovault.controller;
 import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
-import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.dto.request.UpdateArticleStatusRequest;
 import com.ccrcm.infovault.service.ArticleService;
@@ -140,14 +139,20 @@ public class ArticleController {
         );
     }
 
-//@GetMapping("/image/{id}")
-//public ResponseEntity<Resource> getImage(@PathVariable Long id) throws IOException {
-//    return mediaService.getImageById(id);
-//}
-//
-//    @GetMapping("/video/{id}")
-//    public ResponseEntity<Resource> getVideo(@PathVariable Long id) throws IOException {
-//        return mediaService.getVideoById(id);
-//    }
+    @GetMapping("/country/{countryId}")
+    public ResponseEntity<ApiResponse<List<ArticleResponse>>> getTop10ByCountry(
+            @PathVariable Long countryId) {
+
+        List<ArticleResponse> articles =
+                articleService.getTop10ByCountry(countryId);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Top 10 articles fetched successfully",
+                        articles
+                )
+        );
+    }
 
 }

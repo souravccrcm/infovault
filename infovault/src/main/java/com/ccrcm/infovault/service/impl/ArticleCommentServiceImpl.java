@@ -29,9 +29,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
-    // =============================
     // ADD COMMENT / REPLY
-    // =============================
     @Override
     public CommentResponse addComment(CommentRequest request, Long currentUserId) {
 
@@ -44,8 +42,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         ArticleComment comment = new ArticleComment();
         comment.setArticle(article);
         comment.setContent(request.getContent());
-        comment.setUserId(user.getId());
-        comment.setUserName(user.getFirstName() + " " + user.getLastName());
+        comment.setUser(user);
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole().getName());
         comment.setIsAdminReply(isAdmin);
@@ -62,9 +59,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
 
         return mapWithReplies(saved);
     }
-    // =============================
     // UPDATE COMMENT (ADMIN OR OWNER)
-    // =============================
     @Override
     public CommentResponse updateComment(Long commentId,
                                          CommentRequest request,
@@ -78,7 +73,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole().getName());
-        boolean isOwner = comment.getUserId().equals(currentUserId);
+        boolean isOwner = comment.getUser().getId().equals(currentUserId);
 
         if (!isAdmin && !isOwner) {
             throw new UnauthorizedException("You are not allowed to update this comment");
@@ -90,9 +85,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         return mapWithReplies(updated);
     }
 
-    // =============================
     // GET COMMENTS (THREADED)
-    // =============================
     @Override
     @Transactional(readOnly = true)
     public List<CommentResponse> getComments(Long articleId) {
@@ -108,9 +101,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 .collect(Collectors.toList());
     }
 
-    // =============================
     // DELETE COMMENT (ADMIN OR OWNER)
-    // =============================
     @Override
     public void deleteComment(Long commentId, Long currentUserId) {
 
@@ -122,7 +113,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole().getName());
-        boolean isOwner = comment.getUserId().equals(currentUserId);
+        boolean isOwner = comment.getUser().getId().equals(currentUserId);
 
         if (!isAdmin && !isOwner) {
             throw new UnauthorizedException("You are not allowed to delete this comment");
@@ -132,14 +123,16 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         commentRepository.save(comment);
     }
 
-    // =============================
     // MAPPING WITH REPLIES (Recursive)
-    // =============================
     private CommentResponse mapWithReplies(ArticleComment comment) {
 
         CommentResponse response = new CommentResponse();
+
+        User user = comment.getUser();
+
         response.setId(comment.getId());
-        response.setUserName(comment.getUserName());
+        response.setUserId(user.getId());
+        response.setUserName(user.getFirstName() + " " + user.getLastName());
         response.setContent(comment.getContent());
         response.setIsAdminReply(comment.getIsAdminReply());
         response.setCreatedAt(comment.getCreatedAt());

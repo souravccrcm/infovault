@@ -21,7 +21,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -293,4 +294,23 @@ public class ArticleServiceImpl implements ArticleService {
 //
 //        return response;
 //    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ArticleResponse> getTop10ByCountry(Long countryId) {
+
+        log.info("Fetching top 10 articles for country ID: {}", countryId);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<Article> articles =
+                articleRepository.findByCountryIdAndActiveTrueOrderByCreatedAtDesc(
+                        countryId,
+                        pageable
+                );
+
+        return articles.stream()
+                .map(ArticleMapper::toResponse)
+                .toList();
+    }
 }
