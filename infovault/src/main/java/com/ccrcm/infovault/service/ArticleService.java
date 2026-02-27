@@ -3,6 +3,7 @@ package com.ccrcm.infovault.service;
 import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,5 @@ public interface ArticleService {
     void updateStatus(Long id, ArticleStatus status);
 
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
-
 
 }

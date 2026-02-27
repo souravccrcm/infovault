@@ -3,20 +3,27 @@ package com.ccrcm.infovault.controller;
 import com.ccrcm.infovault.dto.request.ArticleRequest;
 import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
+import com.ccrcm.infovault.dto.response.MediaResponse;
+import com.ccrcm.infovault.entity.ArticleImage;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.dto.request.UpdateArticleStatusRequest;
+import com.ccrcm.infovault.repository.ArticleImageRepository;
+import com.ccrcm.infovault.repository.ArticleVideoRepository;
 import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.service.MediaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -28,6 +35,8 @@ public class ArticleController {
     private final ArticleService articleService;
 
     private final MediaService mediaService;
+    private final ArticleImageRepository articleImageRepository;
+    private final ArticleVideoRepository articleVideoRepository;
 
 
     // CREATE / UPDATE
@@ -120,15 +129,6 @@ public class ArticleController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Article status updated successfully", null));
     }
 
-    @GetMapping("/{articleId}/media")
-    public ResponseEntity<ArticleMediaResponse> getArticleMedia(
-            @PathVariable Long articleId) {
-
-        return ResponseEntity.ok(
-                mediaService.getMediaByArticleId(articleId)
-        );
-    }
-
     @GetMapping("/country/{countryId}")
     public ResponseEntity<ApiResponse<List<ArticleResponse>>> getTop10ByCountry(
             @PathVariable Long countryId) {
@@ -143,6 +143,24 @@ public class ArticleController {
                         articles
                 )
         );
+    }
+
+    @GetMapping("/{articleId}/images/raw")
+    public ResponseEntity<Resource> getFirstImageByArticle(
+            @PathVariable Long articleId) throws IOException {
+
+        ArticleImage image = articleImageRepository
+                .findByArticleIdAndActiveTrue(articleId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        Path path = Paths.get(image.getFilePath());
+        Resource resource = new UrlResource(path.toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(resource);
     }
 
 }

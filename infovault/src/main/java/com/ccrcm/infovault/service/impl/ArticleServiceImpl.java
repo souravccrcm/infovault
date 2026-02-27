@@ -41,6 +41,8 @@ public class ArticleServiceImpl implements ArticleService {
     private final UpdateTypeRepository updateTypeRepository;
     private final ClinicalTypeRepository clinicalTypeRepository;
     private final ImpactLevelRepository impactLevelRepository;
+    private final ArticleImageRepository articleImageRepository;
+    private final ArticleVideoRepository articleVideoRepository;
 
     @Value("${file.storage.path}")
     private String storagePath;
@@ -271,4 +273,5 @@ public class ArticleServiceImpl implements ArticleService {
                 .map(ArticleMapper::toResponse)
                 .toList();
     }
+
 }
