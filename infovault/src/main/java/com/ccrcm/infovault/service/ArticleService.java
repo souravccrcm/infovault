@@ -1,7 +1,7 @@
 package com.ccrcm.infovault.service;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
-import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
+import com.ccrcm.infovault.dto.response.ArticleDocumentResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.enums.ArticleStatus;
@@ -16,7 +16,7 @@ public interface ArticleService {
 
     ArticleResponse save(
             ArticleRequest request,
-            MultipartFile file,
+            List<MultipartFile> documents,
             List<MultipartFile> images,
             List<MultipartFile> videos
     ) throws IOException;
@@ -33,4 +33,5 @@ public interface ArticleService {
 
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
 
+    List<ArticleDocumentResponse> getDocumentsByArticle(Long articleId);
 }

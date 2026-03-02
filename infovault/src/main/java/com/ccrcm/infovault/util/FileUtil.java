@@ -54,13 +54,16 @@ public final class FileUtil {
 
     // ================= DOCUMENT =================
     public static String saveDocument(String storagePath,
+                                      Long articleId,
                                       MultipartFile file) throws IOException {
 
         String originalName = file.getOriginalFilename();
         String ext = getExtension(originalName);
         validateExtension(ext, DOC_ALLOWED);
 
-        return save(storagePath, "ArticlesUpload", originalName, file);
+        String newName = articleId + "_" + originalName;
+
+        return save(storagePath, "ArticleDocument", newName, file);
     }
 
     // ================= IMAGE =================

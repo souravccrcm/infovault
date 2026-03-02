@@ -1,7 +1,7 @@
 package com.ccrcm.infovault.service.impl;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
-import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
+import com.ccrcm.infovault.dto.response.ArticleDocumentResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.entity.*;
@@ -13,6 +13,7 @@ import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.util.FileUtil;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,12 +44,13 @@ public class ArticleServiceImpl implements ArticleService {
     private final ImpactLevelRepository impactLevelRepository;
     private final ArticleImageRepository articleImageRepository;
     private final ArticleVideoRepository articleVideoRepository;
+    private final ArticleDocumentRepository articleDocumentRepository;
 
     @Value("${file.storage.path}")
     private String storagePath;
 
     @Override
-    public ArticleResponse save(ArticleRequest request, MultipartFile file, List<MultipartFile> images,
+    public ArticleResponse save(ArticleRequest request,  List<MultipartFile> documents, List<MultipartFile> images,
                                 List<MultipartFile> videos) throws IOException {
 
         log.info("Saving article. Title: {}", request.getTitle());
@@ -94,22 +96,45 @@ public class ArticleServiceImpl implements ArticleService {
         article.setUploadedBy(request.getUploadedBy());
         article.setActive(true);
 
-        // File Handling
-        if (file != null && !file.isEmpty()) {
-            log.info("Uploading file for article: {}", request.getTitle());
-
-            String filePath = FileUtil.saveDocument(storagePath, file);
-
-            article.setFileName(file.getOriginalFilename());
-            article.setFilePath(filePath);
-            article.setFileSize(file.getSize());
-        }
+//        // File Handling
+//        if (file != null && !file.isEmpty()) {
+//            log.info("Uploading file for article: {}", request.getTitle());
+//
+//            String filePath = FileUtil.saveDocument(storagePath, file);
+//
+//            article.setFileName(file.getOriginalFilename());
+//            article.setFilePath(filePath);
+//            article.setFileSize(file.getSize());
+//        }
 
         Article saved = articleRepository.save(article);
 
         log.info("Article saved successfully. ID: {}", saved.getId());
 
         Long articleId = saved.getId();
+
+
+        // ================= DOCUMENT UPLOAD =================
+        if (documents != null && !documents.isEmpty()) {
+
+            for (MultipartFile doc : documents) {
+
+                if (!doc.isEmpty()) {
+
+                    String docPath =
+                            FileUtil.saveDocument(storagePath, articleId, doc);
+
+                    ArticleDocument document = new ArticleDocument();
+                    document.setArticle(saved);
+                    document.setFileName(saved.getId() + "_" + doc.getOriginalFilename());
+                    document.setFilePath(docPath);
+                    document.setFileSize(doc.getSize());
+                    document.setActive(true);
+
+                    saved.getDocuments().add(document);
+                }
+            }
+        }
 
         // ================= IMAGE UPLOAD =================
         if (images != null && !images.isEmpty()) {
@@ -230,18 +255,13 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<Resource> downloadFile(Long id) throws IOException {
+    public ResponseEntity<Resource> downloadFile(Long documentId) throws IOException {
 
+        ArticleDocument document = articleDocumentRepository.findById(documentId)
+                .filter(ArticleDocument::getActive)
+                .orElseThrow(() -> new BadRequestException("Document not found"));
 
-        Article article = articleRepository.findById(id)
-                .filter(Article::getActive)
-                .orElseThrow(() -> new BadRequestException("Article not found"));
-
-        if (article.getFilePath() == null || article.getFileName() == null) {
-            throw new BadRequestException("No file associated with this article");
-        }
-
-        Path path = Paths.get(article.getFilePath());
+        Path path = Paths.get(document.getFilePath());
         UrlResource resource = new UrlResource(path.toUri());
 
         if (!resource.exists()) {
@@ -250,9 +270,25 @@ public class ArticleServiceImpl implements ArticleService {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + article.getFileName() + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                        "attachment; filename=\"" + document.getFileName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    @Override
+    public List<ArticleDocumentResponse> getDocumentsByArticle(Long articleId) {
+        List<ArticleDocument> documents =
+                articleDocumentRepository
+                        .findByArticleIdAndActiveTrue(articleId);
+
+        return documents.stream()
+                .map(doc -> new ArticleDocumentResponse(
+                        doc.getId(),
+                        doc.getFileName(),
+                        doc.getFileSize(),
+                        "/api/documents/download/" + doc.getId()
+                ))
+                .toList();
     }
 
     @Override

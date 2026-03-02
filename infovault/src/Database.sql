@@ -304,4 +304,19 @@ ON article_comments(active);
 
 ALTER TABLE article_comments
 DROP COLUMN user_name;
+-------------------------02/03/2026-------------------------------------------------------------------------------------------
+CREATE TABLE article_document (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
 
+    file_name NVARCHAR(255) NULL,
+    file_path NVARCHAR(500) NULL,
+    file_size BIGINT NULL,
+
+    active BIT NOT NULL DEFAULT 1,
+
+    article_id BIGINT NOT NULL,
+
+    created_at DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    updated_at DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+
+);

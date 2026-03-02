@@ -1,6 +1,7 @@
 package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.ArticleRequest;
+import com.ccrcm.infovault.dto.response.ArticleDocumentResponse;
 import com.ccrcm.infovault.dto.response.ArticleMediaResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.dto.response.MediaResponse;
@@ -43,14 +44,14 @@ public class ArticleController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ArticleResponse>> save(
             @ParameterObject @ModelAttribute ArticleRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "documents", required = false) List<MultipartFile> documents,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @RequestPart(value = "videos", required = false) List<MultipartFile> videos
     ) throws IOException {
 
         log.info("Creating/Updating article. Title: {}", request.getTitle());
 
-        ArticleResponse response = articleService.save(request, file, images, videos);
+        ArticleResponse response = articleService.save(request, documents, images, videos);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -142,6 +143,15 @@ public class ArticleController {
                         "Top 10 articles fetched successfully",
                         articles
                 )
+        );
+    }
+
+    @GetMapping("/{articleId}/get-all-article-documents")
+    public ResponseEntity<List<ArticleDocumentResponse>> getDocumentsByArticle(
+            @PathVariable Long articleId) {
+
+        return ResponseEntity.ok(
+                articleService.getDocumentsByArticle(articleId)
         );
     }
 
