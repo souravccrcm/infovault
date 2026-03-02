@@ -320,3 +320,6 @@ CREATE TABLE article_document (
     updated_at DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 
 );
+
+ALTER TABLE [infovault].[dbo].[articles]
+DROP COLUMN file_name, file_path, file_size
