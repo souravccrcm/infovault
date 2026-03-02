@@ -23,7 +23,7 @@ public class NotificationController {
         );
     }
 
-    @PutMapping("/notifications/{id}/mark-read")
+    @PutMapping("/{id}/mark-read")
     public ResponseEntity<String> markNotificationAsRead(@PathVariable Long id) {
 
         notificationService.markAsRead(id);
