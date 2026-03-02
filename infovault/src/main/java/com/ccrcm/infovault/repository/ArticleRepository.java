@@ -61,9 +61,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
        u.name,
        ct.name,
        a.createdAt,
-       il.name,
-       a.fileName,
-       a.fileSize
+       il.name
    )
    FROM Article a
    JOIN a.source s

@@ -33,9 +33,6 @@ public class ArticleMapper {
                 .articleContent(article.getArticleContent())
                 .status(article.getStatus())
 
-                .fileName(article.getFileName())
-                .fileSize(article.getFileSize())
-
                 .uploadedBy(article.getUploadedBy())
 
                 .createdAt(article.getCreatedAt())
@@ -45,17 +42,6 @@ public class ArticleMapper {
     //  ADD THIS METHOD
     public static RcmUpdateResponse toRcmUpdateResponse(Article article) {
 
-        String base64File = null;
-
-        try {
-            if (article.getFilePath() != null) {
-                byte[] fileBytes = Files.readAllBytes(Path.of(article.getFilePath()));
-                base64File = Base64.getEncoder().encodeToString(fileBytes);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // or log properly
-        }
-
         return new RcmUpdateResponse(
                 article.getId(),
                 article.getTitle(),
@@ -64,11 +50,8 @@ public class ArticleMapper {
                 article.getUpdateType() != null ? article.getUpdateType().getName() : null,
                 article.getClinicalType() != null ? article.getClinicalType().getName() : null,
                 article.getArticleContent() != null ? article.getArticleContent() : null,
-                base64File, // return base64
                 article.getCreatedAt() != null ? article.getCreatedAt() : null,
-                article.getImpactLevel() != null ? article.getImpactLevel().getName() : null,
-                article.getFileName(),
-                article.getFileSize()
+                article.getImpactLevel() != null ? article.getImpactLevel().getName() : null
                 );
     }
 
