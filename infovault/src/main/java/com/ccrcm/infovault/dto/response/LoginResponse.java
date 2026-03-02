@@ -10,6 +10,8 @@ public class LoginResponse {
     private String email;
     private String role;
     private Set<String> permissions;
+    private String firstName;
+    private String lastName;
 
 }
 
