@@ -282,12 +282,23 @@ public class ArticleServiceImpl implements ArticleService {
                         .findByArticleIdAndActiveTrue(articleId);
 
         return documents.stream()
-                .map(doc -> new ArticleDocumentResponse(
-                        doc.getId(),
-                        doc.getFileName(),
-                        doc.getFileSize(),
-                        "/api/documents/download/" + doc.getId()
-                ))
+                .map(doc -> {
+
+                    String originalFileName = doc.getFileName();
+
+                    if (originalFileName != null && originalFileName.contains("_")) {
+                        originalFileName = originalFileName.substring(
+                                originalFileName.indexOf("_") + 1
+                        );
+                    }
+
+                    return new ArticleDocumentResponse(
+                            doc.getId(),
+                            originalFileName,
+                            doc.getFileSize(),
+                            "/api/documents/download/" + doc.getId()
+                    );
+                })
                 .toList();
     }
 
