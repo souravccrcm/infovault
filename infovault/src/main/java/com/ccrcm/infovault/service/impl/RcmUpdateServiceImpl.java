@@ -2,6 +2,7 @@ package com.ccrcm.infovault.service.impl;
 
 import com.ccrcm.infovault.dto.response.RcmUpdateResponse;
 import com.ccrcm.infovault.entity.Article;
+import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.ArticleRepository;
@@ -24,14 +25,14 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
     @Override
     public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateListDetails() {
 
-        List<RcmUpdateResponse> articles = articleRepository.findByActiveTrue()
+        List<RcmUpdateResponse> articles = articleRepository.findByActiveTrueAndStatus(ArticleStatus.PUBLISHED)
                 .stream()
                 .map(ArticleMapper::toRcmUpdateResponse)
                 .toList();
 
         ApiResponse<List<RcmUpdateResponse>> body = new ApiResponse<>(
                 true,
-                "Rcm Updated fetched successfully",
+                "Published Rcm Updates fetched successfully",
                 articles
         );
         return ResponseEntity.ok(body);
