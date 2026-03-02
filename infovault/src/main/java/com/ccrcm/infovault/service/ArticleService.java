@@ -34,4 +34,6 @@ public interface ArticleService {
     ResponseEntity<Resource> downloadFile(Long id) throws IOException;
 
     List<ArticleDocumentResponse> getDocumentsByArticle(Long articleId);
+
+    void deleteDocument(Long id);
 }

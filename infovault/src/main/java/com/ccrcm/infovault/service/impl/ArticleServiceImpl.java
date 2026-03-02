@@ -321,4 +321,14 @@ public class ArticleServiceImpl implements ArticleService {
                 .toList();
     }
 
+    @Override
+    public void deleteDocument(Long documentId) {
+        ArticleDocument document = articleDocumentRepository
+                .findByIdAndActiveTrue(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        document.setActive(false);
+
+        articleDocumentRepository.save(document);
+    }
 }

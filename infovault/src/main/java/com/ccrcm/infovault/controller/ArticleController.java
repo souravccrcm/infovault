@@ -155,4 +155,12 @@ public class ArticleController {
         );
     }
 
+    @DeleteMapping("/delete-documents/{id}")
+    public ResponseEntity<String> deleteDocument(@PathVariable Long id) {
+
+        articleService.deleteDocument(id);
+
+        return ResponseEntity.ok("Document deleted successfully (soft delete)");
+    }
+
 }
