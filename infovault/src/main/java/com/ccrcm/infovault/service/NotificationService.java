@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface NotificationService {
     List<NotificationResponse> getLatestNotifications();
+
+    void markAsRead(Long id);
 }

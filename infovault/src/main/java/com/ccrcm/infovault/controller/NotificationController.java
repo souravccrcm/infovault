@@ -4,9 +4,7 @@ import com.ccrcm.infovault.dto.response.NotificationResponse;
 import com.ccrcm.infovault.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,13 @@ public class NotificationController {
         return ResponseEntity.ok(
                 notificationService.getLatestNotifications()
         );
+    }
+
+    @PutMapping("/notifications/{id}/mark-read")
+    public ResponseEntity<String> markNotificationAsRead(@PathVariable Long id) {
+
+        notificationService.markAsRead(id);
+
+        return ResponseEntity.ok("Notification marked as read successfully");
     }
 }
