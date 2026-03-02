@@ -49,15 +49,6 @@ public class Article extends BaseEntity {
     @Column(nullable = false)
     private ArticleStatus status;
 
-//    @Column(name = "file_name", nullable = false)
-//    private String fileName;
-//
-//    @Column(name = "file_path", nullable = false)
-//    private String filePath;
-//
-//    @Column(name = "file_size")
-//    private Long fileSize;
-
     @Column(name = "uploaded_by", nullable = false)
     private Long uploadedBy;
 
