@@ -323,3 +323,6 @@ CREATE TABLE article_document (
 
 ALTER TABLE [infovault].[dbo].[articles]
 DROP COLUMN file_name, file_path, file_size
+---------------------------------------03/03/2026------------------------------------------------------------------
+ALTER TABLE article_comments
+ADD is_pinned BIT NOT NULL DEFAULT 0;
