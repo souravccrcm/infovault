@@ -94,11 +94,53 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
 
         List<ArticleComment> rootComments =
                 commentRepository
-                        .findByArticleIdAndParentIsNullAndActiveTrueOrderByIsAdminReplyDescCreatedAtDesc(articleId);
+                        .findByArticleIdAndParentIsNullAndActiveTrueOrderByIsPinnedDescIsAdminReplyDescCreatedAtDesc(articleId);
 
         return rootComments.stream()
                 .map(this::mapWithReplies)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void pinComment(Long commentId) {
+        ArticleComment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        // Prevent pinning replies (optional but recommended)
+        if (comment.getParent() != null) {
+            throw new RuntimeException("Only root comments can be pinned");
+        }
+
+        if (comment.getIsPinned()) {
+            throw new RuntimeException("Comment already pinned");
+        }
+
+        long pinnedCount = commentRepository
+                .countByArticleIdAndIsPinnedTrueAndActiveTrue(
+                        comment.getArticle().getId());
+
+        if (pinnedCount >= 2) {
+            throw new RuntimeException("Maximum 2 comments can be pinned");
+        }
+
+        comment.setIsPinned(true);
+        commentRepository.save(comment);
+    }
+
+    @Override
+    @Transactional
+    public void unpinComment(Long commentId) {
+
+        ArticleComment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getIsPinned()) {
+            throw new RuntimeException("Comment is not pinned");
+        }
+
+        comment.setIsPinned(false);
+        commentRepository.save(comment);
     }
 
     // DELETE COMMENT (ADMIN OR OWNER)

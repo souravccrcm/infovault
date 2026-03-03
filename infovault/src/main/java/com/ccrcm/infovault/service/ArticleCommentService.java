@@ -16,4 +16,8 @@ public interface ArticleCommentService {
     void deleteComment(Long commentId, Long currentUserId);
 
     List<CommentResponse> getComments(Long articleId);
+
+    void pinComment(Long id);
+
+    void unpinComment(Long id);
 }

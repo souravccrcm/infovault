@@ -67,4 +67,26 @@ public class ArticleCommentController {
                         commentService.getComments(articleId))
         );
     }
+
+    @PutMapping("/comments/{id}/pin")
+    public ResponseEntity<ApiResponse<String>> pinComment(
+            @PathVariable Long id) {
+
+        commentService.pinComment(id);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Comment pinned successfully", null)
+        );
+    }
+
+    @PutMapping("/comments/{id}/unpin")
+    public ResponseEntity<ApiResponse<String>> unpinComment(
+            @PathVariable Long id) {
+
+        commentService.unpinComment(id);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Comment unpinned successfully", null)
+        );
+    }
 }

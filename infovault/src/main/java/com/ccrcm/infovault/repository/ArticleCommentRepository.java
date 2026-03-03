@@ -11,4 +11,8 @@ public interface ArticleCommentRepository
     List<ArticleComment> findByArticleIdAndParentIsNullAndActiveTrueOrderByIsAdminReplyDescCreatedAtDesc(Long articleId);
 
     List<ArticleComment> findByParentIdAndActiveTrueOrderByIsAdminReplyDescCreatedAtAsc(Long parentId);
+
+    long countByArticleIdAndIsPinnedTrueAndActiveTrue(Long id);
+
+    List<ArticleComment> findByArticleIdAndParentIsNullAndActiveTrueOrderByIsPinnedDescIsAdminReplyDescCreatedAtDesc(Long articleId);
 }

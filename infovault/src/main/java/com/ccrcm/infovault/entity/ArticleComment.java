@@ -34,4 +34,7 @@ public class ArticleComment extends BaseEntity {
 
     @Column(name = "active", nullable = false)
     private Boolean active = true;
+
+    @Column(name = "is_pinned", nullable = false)
+    private Boolean isPinned = false;
 }
