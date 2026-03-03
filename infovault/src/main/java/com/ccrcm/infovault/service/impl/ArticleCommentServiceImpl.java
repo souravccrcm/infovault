@@ -104,16 +104,16 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     @Override
     @Transactional
     public void pinComment(Long commentId) {
-        ArticleComment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        // Prevent pinning replies (optional but recommended)
+        ArticleComment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BadRequestException("Comment not found"));
+
         if (comment.getParent() != null) {
-            throw new RuntimeException("Only root comments can be pinned");
+            throw new BadRequestException("Only root comments can be pinned");
         }
 
         if (comment.getIsPinned()) {
-            throw new RuntimeException("Comment already pinned");
+            throw new BadRequestException("Comment already pinned");
         }
 
         long pinnedCount = commentRepository
@@ -121,7 +121,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
                         comment.getArticle().getId());
 
         if (pinnedCount >= 2) {
-            throw new RuntimeException("Maximum 2 comments can be pinned");
+            throw new BadRequestException("Maximum 2 comments can be pinned");
         }
 
         comment.setIsPinned(true);
@@ -133,10 +133,10 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
     public void unpinComment(Long commentId) {
 
         ArticleComment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new BadRequestException("Comment not found"));
 
         if (!comment.getIsPinned()) {
-            throw new RuntimeException("Comment is not pinned");
+            throw new BadRequestException("Comment is not pinned");
         }
 
         comment.setIsPinned(false);
