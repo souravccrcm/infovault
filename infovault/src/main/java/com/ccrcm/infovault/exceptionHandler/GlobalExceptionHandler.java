@@ -1,5 +1,6 @@
 package com.ccrcm.infovault.exceptionHandler;
 
+import com.ccrcm.infovault.exception.BadRequestException;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -81,6 +82,21 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(
                         false,
                         "File size exceeds allowed limit (20MB)",
+                        null
+                ));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBadRequest(
+            BadRequestException ex) {
+
+        log.warn("Bad request: {}", ex.getMessage());
+
+        return ResponseEntity
+                .badRequest()
+                .body(new ApiResponse<>(
+                        false,
+                        ex.getMessage(),
                         null
                 ));
     }
