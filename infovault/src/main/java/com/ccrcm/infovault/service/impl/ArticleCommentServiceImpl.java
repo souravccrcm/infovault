@@ -178,6 +178,7 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
         response.setContent(comment.getContent());
         response.setIsAdminReply(comment.getIsAdminReply());
         response.setCreatedAt(comment.getCreatedAt());
+        response.setIsPinned(comment.getIsPinned());
 
         List<ArticleComment> replies =
                 commentRepository

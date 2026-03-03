@@ -17,4 +17,5 @@ public class CommentResponse {
     private Boolean isAdminReply;
     private LocalDateTime createdAt;
     private List<CommentResponse> replies;
+    private Boolean isPinned;
 }
