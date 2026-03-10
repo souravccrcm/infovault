@@ -7,7 +7,13 @@ import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.ArticleRepository;
 import com.ccrcm.infovault.service.RcmUpdateService;
+import com.ccrcm.infovault.specification.ArticleSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,19 +28,40 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
     private final ArticleRepository articleRepository;
 
+//    @Override
+//    public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateListDetails() {
+//
+//        List<RcmUpdateResponse> articles = articleRepository.findByActiveTrueAndStatus(ArticleStatus.PUBLISHED)
+//                .stream()
+//                .map(ArticleMapper::toRcmUpdateResponse)
+//                .toList();
+//
+//        ApiResponse<List<RcmUpdateResponse>> body = new ApiResponse<>(
+//                true,
+//                "Published Rcm Updates fetched successfully",
+//                articles
+//        );
+//        return ResponseEntity.ok(body);
+//    }
+
     @Override
-    public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateListDetails() {
+    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails(Long countryId, Long updateTypeId, Long clinicalTypeId, String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        List<RcmUpdateResponse> articles = articleRepository.findByActiveTrueAndStatus(ArticleStatus.PUBLISHED)
-                .stream()
-                .map(ArticleMapper::toRcmUpdateResponse)
-                .toList();
+        Specification<Article> spec = ArticleSpecification.filterArticles(
+                countryId, updateTypeId, clinicalTypeId, search
+        );
 
-        ApiResponse<List<RcmUpdateResponse>> body = new ApiResponse<>(
+        Page<RcmUpdateResponse> articles = articleRepository
+                .findAll(spec, pageable)
+                .map(ArticleMapper::toRcmUpdateResponse);
+
+        ApiResponse<Page<RcmUpdateResponse>> body = new ApiResponse<>(
                 true,
                 "Published Rcm Updates fetched successfully",
                 articles
         );
+
         return ResponseEntity.ok(body);
     }
 

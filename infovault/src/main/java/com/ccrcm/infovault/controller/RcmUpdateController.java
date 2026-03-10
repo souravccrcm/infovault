@@ -4,11 +4,9 @@ import com.ccrcm.infovault.dto.response.RcmUpdateResponse;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.RcmUpdateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,9 +18,17 @@ public class RcmUpdateController {
     private final RcmUpdateService rcmUpdateService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateList() {
+    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateList(
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long updateTypeId,
+            @RequestParam(required = false) Long clinicalTypeId,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
-        return rcmUpdateService.getAllRcmUpdateListDetails();
+        return rcmUpdateService.getAllRcmUpdateListDetails(
+                countryId, updateTypeId, clinicalTypeId, search, page, size);
     }
 
     @GetMapping("/{id}")

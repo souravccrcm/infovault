@@ -4,6 +4,7 @@ import com.ccrcm.infovault.dto.response.RcmUpdateResponse;
 import com.ccrcm.infovault.entity.Article;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ArticleRepository extends JpaRepository<Article, Long> {
+public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpecificationExecutor<Article> {
 
     @Query("SELECT a FROM Article a WHERE a.active = true")
     List<Article> findByActiveTrue();
