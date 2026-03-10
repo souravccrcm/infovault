@@ -84,4 +84,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     );
 
     List<Article> findByActiveTrueAndStatus(ArticleStatus status);
+
+    List<Article> findByCountryIdAndIdNotAndActiveTrueOrderByCreatedAtDesc(Long countryId, Long excludeArticleId, Pageable pageable);
 }

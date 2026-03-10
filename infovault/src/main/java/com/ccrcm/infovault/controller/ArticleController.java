@@ -132,10 +132,10 @@ public class ArticleController {
 
     @GetMapping("/country/{countryId}")
     public ResponseEntity<ApiResponse<List<ArticleResponse>>> getTop10ByCountry(
-            @PathVariable Long countryId) {
+            @PathVariable Long countryId,@RequestParam Long articleId) {
 
         List<ArticleResponse> articles =
-                articleService.getTop10ByCountry(countryId);
+                articleService.getTop10ByCountry(countryId,articleId);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(

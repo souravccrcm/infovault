@@ -304,15 +304,16 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponse> getTop10ByCountry(Long countryId) {
+    public List<ArticleResponse> getTop10ByCountry(Long countryId,Long excludeArticleId) {
 
         log.info("Fetching top 10 articles for country ID: {}", countryId);
 
         Pageable pageable = PageRequest.of(0, 10);
 
         List<Article> articles =
-                articleRepository.findByCountryIdAndActiveTrueOrderByCreatedAtDesc(
+                articleRepository.findByCountryIdAndIdNotAndActiveTrueOrderByCreatedAtDesc(
                         countryId,
+                        excludeArticleId,
                         pageable
                 );
 

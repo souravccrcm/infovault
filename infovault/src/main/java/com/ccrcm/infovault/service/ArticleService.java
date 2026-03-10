@@ -23,7 +23,7 @@ public interface ArticleService {
 
     ArticleResponse getById(Long id);
 
-    List<ArticleResponse> getTop10ByCountry(Long countryId);
+    List<ArticleResponse> getTop10ByCountry(Long countryId, Long articleId);
 
     List<ArticleResponse> getAll();
 
