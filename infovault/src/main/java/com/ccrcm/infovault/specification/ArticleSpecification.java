@@ -2,6 +2,7 @@ package com.ccrcm.infovault.specification;
 
 import com.ccrcm.infovault.entity.*;
 import com.ccrcm.infovault.enums.ArticleStatus;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -25,39 +26,30 @@ public class ArticleSpecification {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            // Active articles only
+            // Active
             predicates.add(cb.isTrue(root.get("active")));
 
-            // Only Published
+            // Published
             predicates.add(
-                    cb.equal(
-                            root.get("status"),
-                            ArticleStatus.PUBLISHED
-                    )
+                    cb.equal(root.get("status"), ArticleStatus.PUBLISHED)
             );
 
-            // Country Filter (MULTI)
+            // Country filter
             if (countryIds != null && !countryIds.isEmpty()) {
-                predicates.add(
-                        root.get("country").get("id").in(countryIds)
-                );
+                predicates.add(root.get("country").get("id").in(countryIds));
             }
 
-            // UpdateType Filter (MULTI)
+            // Update type filter
             if (updateTypeIds != null && !updateTypeIds.isEmpty()) {
-                predicates.add(
-                        root.get("updateType").get("id").in(updateTypeIds)
-                );
+                predicates.add(root.get("updateType").get("id").in(updateTypeIds));
             }
 
-            // ClinicalType Filter (MULTI)
+            // Clinical type filter
             if (clinicalTypeIds != null && !clinicalTypeIds.isEmpty()) {
-                predicates.add(
-                        root.get("clinicalType").get("id").in(clinicalTypeIds)
-                );
+                predicates.add(root.get("clinicalType").get("id").in(clinicalTypeIds));
             }
 
-            // Global Search
+            // Search
             if (search != null && !search.trim().isEmpty()) {
 
                 String pattern = "%" + search.trim().toLowerCase() + "%";
@@ -78,9 +70,21 @@ public class ArticleSpecification {
                 searchPredicates.add(cb.like(cb.lower(clinicalTypeJoin.get("name")), pattern));
                 searchPredicates.add(cb.like(cb.lower(impactJoin.get("name")), pattern));
 
-                predicates.add(
-                        cb.or(searchPredicates.toArray(new Predicate[0]))
-                );
+                predicates.add(cb.or(searchPredicates.toArray(new Predicate[0])));
+
+                /*
+                 * Relevance ranking
+                 * Title match -> highest
+                 * Article content -> medium
+                 * Others -> low
+                 */
+
+                Expression<Integer> relevanceScore = cb.<Integer>selectCase()
+                        .when(cb.like(cb.lower(root.get("title")), pattern), 1)
+                        .when(cb.like(cb.lower(root.get("articleContent")), pattern), 2)
+                        .otherwise(3);
+
+                query.orderBy(cb.asc(relevanceScore));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
