@@ -22,11 +22,9 @@ public class RcmUpdateResponse {
     private String updateType;
     private String clinicalType;
     private String articleContent;
-   // private String fileBase64; // add this
     private LocalDateTime createdAt;
     private String impactLevel;
-    //private String fileName;
-    //private Long fileSize;
+    private Long countryId;
 
 
 
@@ -47,6 +45,7 @@ public class RcmUpdateResponse {
         this.clinicalType = clinicalType;
         this.createdAt = createdAt;
         this.impactLevel = impactLevel;
+        this.countryId = countryId;
 
     }
 }

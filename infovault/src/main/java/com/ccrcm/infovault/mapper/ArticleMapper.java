@@ -51,7 +51,8 @@ public class ArticleMapper {
                 article.getClinicalType() != null ? article.getClinicalType().getName() : null,
                 article.getArticleContent() != null ? article.getArticleContent() : null,
                 article.getCreatedAt() != null ? article.getCreatedAt() : null,
-                article.getImpactLevel() != null ? article.getImpactLevel().getName() : null
+                article.getImpactLevel() != null ? article.getImpactLevel().getName() : null,
+                article.getCountry() != null ? article.getCountry().getId() : null
                 );
     }
 
