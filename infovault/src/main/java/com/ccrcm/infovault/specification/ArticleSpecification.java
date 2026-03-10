@@ -13,9 +13,9 @@ import java.util.List;
 public class ArticleSpecification {
 
     public static Specification<Article> filterArticles(
-            Long countryId,
-            Long updateTypeId,
-            Long clinicalTypeId,
+            List<Long> countryIds,
+            List<Long> updateTypeIds,
+            List<Long> clinicalTypeIds,
             String search
     ) {
 
@@ -25,27 +25,36 @@ public class ArticleSpecification {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            // Default conditions active and published
+            // Active articles only
             predicates.add(cb.isTrue(root.get("active")));
-            // Default conditions
-            predicates.add(cb.isTrue(root.get("active")));
+
+            // Only Published
             predicates.add(
                     cb.equal(
                             root.get("status"),
                             ArticleStatus.PUBLISHED
                     )
             );
-            // Filters
-            if (countryId != null) {
-                predicates.add(cb.equal(root.get("country").get("id"), countryId));
+
+            // Country Filter (MULTI)
+            if (countryIds != null && !countryIds.isEmpty()) {
+                predicates.add(
+                        root.get("country").get("id").in(countryIds)
+                );
             }
 
-            if (updateTypeId != null) {
-                predicates.add(cb.equal(root.get("updateType").get("id"), updateTypeId));
+            // UpdateType Filter (MULTI)
+            if (updateTypeIds != null && !updateTypeIds.isEmpty()) {
+                predicates.add(
+                        root.get("updateType").get("id").in(updateTypeIds)
+                );
             }
 
-            if (clinicalTypeId != null) {
-                predicates.add(cb.equal(root.get("clinicalType").get("id"), clinicalTypeId));
+            // ClinicalType Filter (MULTI)
+            if (clinicalTypeIds != null && !clinicalTypeIds.isEmpty()) {
+                predicates.add(
+                        root.get("clinicalType").get("id").in(clinicalTypeIds)
+                );
             }
 
             // Global Search
@@ -69,7 +78,9 @@ public class ArticleSpecification {
                 searchPredicates.add(cb.like(cb.lower(clinicalTypeJoin.get("name")), pattern));
                 searchPredicates.add(cb.like(cb.lower(impactJoin.get("name")), pattern));
 
-                predicates.add(cb.or(searchPredicates.toArray(new Predicate[0])));
+                predicates.add(
+                        cb.or(searchPredicates.toArray(new Predicate[0]))
+                );
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

@@ -28,28 +28,20 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
     private final ArticleRepository articleRepository;
 
-//    @Override
-//    public ResponseEntity<ApiResponse<List<RcmUpdateResponse>>> getAllRcmUpdateListDetails() {
-//
-//        List<RcmUpdateResponse> articles = articleRepository.findByActiveTrueAndStatus(ArticleStatus.PUBLISHED)
-//                .stream()
-//                .map(ArticleMapper::toRcmUpdateResponse)
-//                .toList();
-//
-//        ApiResponse<List<RcmUpdateResponse>> body = new ApiResponse<>(
-//                true,
-//                "Published Rcm Updates fetched successfully",
-//                articles
-//        );
-//        return ResponseEntity.ok(body);
-//    }
-
     @Override
-    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails(Long countryId, Long updateTypeId, Long clinicalTypeId, String search, int page, int size) {
+    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails( List<Long> countryIds,
+                                                                                            List<Long> updateTypeIds,
+                                                                                            List<Long> clinicalTypeIds,
+                                                                                            String search,
+                                                                                            int page,
+                                                                                            int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Specification<Article> spec = ArticleSpecification.filterArticles(
-                countryId, updateTypeId, clinicalTypeId, search
+                countryIds,
+                updateTypeIds,
+                clinicalTypeIds,
+                search
         );
 
         Page<RcmUpdateResponse> articles = articleRepository
@@ -64,6 +56,7 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
         return ResponseEntity.ok(body);
     }
+
 
     @Override
     public ResponseEntity<ApiResponse<RcmUpdateResponse>> getRcmUpdateById(Long id) {

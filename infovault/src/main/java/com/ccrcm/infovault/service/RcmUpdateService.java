@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 public interface RcmUpdateService {
 
     ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails(
-            Long countryId,
-            Long updateTypeId,
-            Long clinicalTypeId,
+            List<Long> countryIds,
+            List<Long> updateTypeIds,
+            List<Long> clinicalTypeIds,
             String search,
             int page,
             int size

@@ -19,16 +19,16 @@ public class RcmUpdateController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateList(
-            @RequestParam(required = false) Long countryId,
-            @RequestParam(required = false) Long updateTypeId,
-            @RequestParam(required = false) Long clinicalTypeId,
+            @RequestParam(required = false) List<Long> countryIds,
+            @RequestParam(required = false) List<Long> updateTypeIds,
+            @RequestParam(required = false) List<Long> clinicalTypeIds,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
 
         return rcmUpdateService.getAllRcmUpdateListDetails(
-                countryId, updateTypeId, clinicalTypeId, search, page, size);
+                countryIds, updateTypeIds, clinicalTypeIds, search, page, size);
     }
 
     @GetMapping("/{id}")
