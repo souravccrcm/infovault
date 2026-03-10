@@ -81,7 +81,13 @@ public class ArticleSpecification {
 
                 Expression<Integer> relevanceScore = cb.<Integer>selectCase()
                         .when(cb.like(cb.lower(root.get("title")), pattern), 1)
-                        .when(cb.like(cb.lower(root.get("articleContent")), pattern), 2)
+                        .when(
+                                cb.and(
+                                        cb.notLike(cb.lower(root.get("title")), pattern),
+                                        cb.like(cb.lower(root.get("articleContent")), pattern)
+                                ),
+                                2
+                        )
                         .otherwise(3);
 
                 query.orderBy(cb.asc(relevanceScore));
