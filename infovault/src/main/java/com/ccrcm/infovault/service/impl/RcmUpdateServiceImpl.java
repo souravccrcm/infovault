@@ -29,13 +29,23 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
     private final ArticleRepository articleRepository;
 
     @Override
-    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails( List<Long> countryIds,
-                                                                                            List<Long> updateTypeIds,
-                                                                                            List<Long> clinicalTypeIds,
-                                                                                            String search,
-                                                                                            int page,
-                                                                                            int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    public ResponseEntity<ApiResponse<Page<RcmUpdateResponse>>> getAllRcmUpdateListDetails(
+            List<Long> countryIds,
+            List<Long> updateTypeIds,
+            List<Long> clinicalTypeIds,
+            String search,
+            int page,
+            int size) {
+
+        Pageable pageable;
+
+        if (search != null && !search.trim().isEmpty()) {
+            // Do not apply sorting because Specification handles ranking
+            pageable = PageRequest.of(page, size);
+        } else {
+            // Default sorting when no search
+            pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        }
 
         Specification<Article> spec = ArticleSpecification.filterArticles(
                 countryIds,
