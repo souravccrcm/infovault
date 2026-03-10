@@ -27,13 +27,14 @@ public class ArticleSpecification {
 
             // Default conditions active and published
             predicates.add(cb.isTrue(root.get("active")));
+            // Default conditions
+            predicates.add(cb.isTrue(root.get("active")));
             predicates.add(
                     cb.equal(
-                            root.get("status").as(String.class),
-                            "PUBLISHED"
+                            root.get("status"),
+                            ArticleStatus.PUBLISHED
                     )
             );
-
             // Filters
             if (countryId != null) {
                 predicates.add(cb.equal(root.get("country").get("id"), countryId));
