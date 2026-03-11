@@ -5,7 +5,9 @@ import com.ccrcm.infovault.dto.response.ArticleDocumentResponse;
 import com.ccrcm.infovault.dto.response.ArticleResponse;
 import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.enums.ArticleStatus;
+import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +27,14 @@ public interface ArticleService {
 
     List<ArticleResponse> getTop10ByCountry(Long countryId, Long articleId);
 
-    List<ArticleResponse> getAll();
+    ResponseEntity<ApiResponse<Page<ArticleResponse>>> getAll(List<Long> sourceIds,
+                                                              List<Long> countryIds,
+                                                              List<Long> updateTypeIds,
+                                                              List<Long> clinicalTypeIds,
+                                                              List<Integer> statusCodes,
+                                                              String search,
+                                                              int page,
+                                                              int size);
 
     void deleteByIds(List<Long> id);
 

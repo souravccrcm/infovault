@@ -7,11 +7,13 @@ import com.ccrcm.infovault.dto.response.MediaResponse;
 import com.ccrcm.infovault.entity.*;
 import com.ccrcm.infovault.enums.ArticleStatus;
 import com.ccrcm.infovault.exception.BadRequestException;
+import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.mapper.ArticleMapper;
 import com.ccrcm.infovault.repository.*;
 import com.ccrcm.infovault.service.ArticleService;
 import com.ccrcm.infovault.util.FileUtil;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -199,14 +201,39 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponse> getAll() {
+    public ResponseEntity<ApiResponse<Page<ArticleResponse>>> getAll(
+            List<Long> sourceIds,
+            List<Long> countryIds,
+            List<Long> updateTypeIds,
+            List<Long> clinicalTypeIds,
+            List<Integer> statusCodes,
+            String search,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
 
         log.info("Fetching all active articles");
 
-        return articleRepository.findAllByActiveTrue()
-                .stream()
-                .map(ArticleMapper::toResponse)
-                .collect(Collectors.toList());
+        Page<ArticleResponse> articles = articleRepository
+                .searchArticlesWithFilters(
+                        sourceIds,
+                        countryIds,
+                        updateTypeIds,
+                        clinicalTypeIds,
+                        statusCodes,
+                        search,
+                        pageable
+                )
+                .map(ArticleMapper::toResponse);
+
+        ApiResponse<Page<ArticleResponse>> body = new ApiResponse<>(
+                true,
+                "Articles fetched successfully",
+                articles
+        );
+
+        return ResponseEntity.ok(body);
     }
 
     @Override

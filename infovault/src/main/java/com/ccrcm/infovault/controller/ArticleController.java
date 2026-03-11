@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -81,19 +82,30 @@ public class ArticleController {
 
     //  GET ALL
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ArticleResponse>>> getAll() {
+    public ResponseEntity<ApiResponse<Page<ArticleResponse>>> getAll(
+            @RequestParam(required = false) List<Long> sourceIds,
+            @RequestParam(required = false) List<Long> countryIds,
+            @RequestParam(required = false) List<Long> updateTypeIds,
+            @RequestParam(required = false) List<Long> clinicalTypeIds,
+            @RequestParam(required = false) List<Integer> statusCodes,
+            @RequestParam(required = false) String search,
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    )
+            {
 
         log.info("Fetching all articles");
-
-        List<ArticleResponse> articles = articleService.getAll();
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        true,
-                        "Articles fetched successfully",
-                        articles
-                )
-        );
+                return articleService.getAll(
+                        sourceIds,
+                        countryIds,
+                        updateTypeIds,
+                        clinicalTypeIds,
+                        statusCodes,
+                        search,
+                        page,
+                        size
+                );
     }
 
     // BULK DELETE - delete multiple articles by IDs

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpecificationExecutor<Article> {
@@ -142,6 +143,66 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
             @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
             @Param("search") String search,
             @Param("code") int code,
+            Pageable pageable
+    );
+
+    @Query(value = """
+        SELECT a.*
+        FROM articles a
+        LEFT JOIN sources s ON s.id = a.source_id
+        LEFT JOIN countries c ON c.id = a.country_id
+        LEFT JOIN update_types ut ON ut.id = a.update_type_id
+        LEFT JOIN clinical_types ct ON ct.id = a.clinical_type_id
+        
+        WHERE
+            a.active = 1
+            
+            AND (:sourceIds IS NULL OR a.source_id IN (:sourceIds))
+            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
+            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:statusCodes IS NULL OR a.status IN (:statusCodes))
+
+            AND (
+                :search IS NULL
+                OR LOWER(a.title) LIKE CONCAT('%',:search,'%')
+            )
+
+        ORDER BY
+            CASE
+                WHEN LOWER(a.title) LIKE CONCAT(:search,'%') THEN 1
+                WHEN LOWER(a.title) LIKE CONCAT('%',:search,'%') THEN 2
+                ELSE 3
+            END,
+            a.created_at DESC
+        """,
+
+            countQuery = """
+        SELECT COUNT(*)
+        FROM articles a
+        WHERE
+            a.active = 1
+            
+            AND (:sourceIds IS NULL OR a.source_id IN (:sourceIds))
+            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
+            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:statusCodes IS NULL OR a.status IN (:statusCodes))
+
+            AND (
+                :search IS NULL
+                OR LOWER(a.title) LIKE CONCAT('%',:search,'%')
+            )
+        """,
+            nativeQuery = true)
+    Page<Article> searchArticlesWithFilters(
+
+            @Param("sourceIds") List<Long> sourceIds,
+            @Param("countryIds") List<Long> countryIds,
+            @Param("updateTypeIds") List<Long> updateTypeIds,
+            @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
+            @Param("statusCodes") List<Integer> statusCodes,
+            @Param("search") String search,
             Pageable pageable
     );
 
