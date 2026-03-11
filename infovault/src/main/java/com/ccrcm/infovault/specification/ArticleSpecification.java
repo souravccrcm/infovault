@@ -2,10 +2,7 @@ package com.ccrcm.infovault.specification;
 
 import com.ccrcm.infovault.entity.*;
 import com.ccrcm.infovault.enums.ArticleStatus;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -21,8 +18,6 @@ public class ArticleSpecification {
     ) {
 
         return (root, query, cb) -> {
-
-            query.distinct(true);
 
             List<Predicate> predicates = new ArrayList<>();
 
@@ -52,7 +47,8 @@ public class ArticleSpecification {
             // Search
             if (search != null && !search.trim().isEmpty()) {
 
-                String pattern = "%" + search.trim().toLowerCase() + "%";
+                String searchLower = search.trim().toLowerCase();
+                String pattern = "%" + searchLower + "%";
 
                 Join<Article, Source> sourceJoin = root.join("source", JoinType.LEFT);
                 Join<Article, Country> countryJoin = root.join("country", JoinType.LEFT);
@@ -73,17 +69,32 @@ public class ArticleSpecification {
                 predicates.add(cb.or(searchPredicates.toArray(new Predicate[0])));
 
                 /*
-                 * Relevance ranking
-                 * Title match -> highest
-                 * Article content -> medium
-                 * Others -> low
-                 */
+                 Relevance ranking
+                 1 -> title starts with search
+                 2 -> title contains search
+                 3 -> article content
+                 4 -> source
+                 5 -> country
+                 6 -> update type
+                 7 -> clinical type
+                 8 -> impact level
+                */
 
                 Expression<Integer> relevanceScore = cb.<Integer>selectCase()
-                        .when(cb.like(cb.lower(root.get("title")), pattern), 1)
-                        .otherwise(2);
+                        .when(cb.like(cb.lower(root.get("title")), searchLower + "%"), 1)
+                        .when(cb.like(cb.lower(root.get("title")), "%" + searchLower + "%"), 2)
+                        .when(cb.like(cb.lower(root.get("articleContent")), pattern), 3)
+                        .when(cb.like(cb.lower(sourceJoin.get("name")), pattern), 4)
+                        .when(cb.like(cb.lower(countryJoin.get("name")), pattern), 5)
+                        .when(cb.like(cb.lower(updateTypeJoin.get("name")), pattern), 6)
+                        .when(cb.like(cb.lower(clinicalTypeJoin.get("name")), pattern), 7)
+                        .when(cb.like(cb.lower(impactJoin.get("name")), pattern), 8)
+                        .otherwise(9);
 
-                query.orderBy(cb.asc(relevanceScore));
+                query.orderBy(
+                        cb.asc(relevanceScore),
+                        cb.desc(root.get("createdAt"))
+                );
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

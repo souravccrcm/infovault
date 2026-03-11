@@ -3,6 +3,7 @@ package com.ccrcm.infovault.repository;
 import com.ccrcm.infovault.dto.response.RcmUpdateResponse;
 import com.ccrcm.infovault.entity.Article;
 import com.ccrcm.infovault.enums.ArticleStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpecificationExecutor<Article> {
@@ -87,4 +87,62 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
     List<Article> findByActiveTrueAndStatus(ArticleStatus status);
 
     List<Article> findByCountryIdAndIdNotAndActiveTrueOrderByCreatedAtDesc(Long countryId, Long excludeArticleId, Pageable pageable);
+    @Query(value = """
+        SELECT a.*
+        FROM articles a
+        LEFT JOIN sources s ON s.id = a.source_id
+        LEFT JOIN countries c ON c.id = a.country_id
+        LEFT JOIN update_types ut ON ut.id = a.update_type_id
+        LEFT JOIN clinical_types ct ON ct.id = a.clinical_type_id
+        LEFT JOIN impact_levels il ON il.id = a.impact_level_id
+        WHERE 
+            a.active = 1
+            AND a.status = :code
+            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
+            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (
+                :search IS NULL
+                OR LOWER(a.title) LIKE CONCAT('%',:search,'%')
+                OR LOWER(a.article_content) LIKE CONCAT('%',:search,'%')
+                OR LOWER(s.name) LIKE CONCAT('%',:search,'%')
+                OR LOWER(c.name) LIKE CONCAT('%',:search,'%')
+                OR LOWER(ut.name) LIKE CONCAT('%',:search,'%')
+                OR LOWER(ct.name) LIKE CONCAT('%',:search,'%')
+                OR LOWER(il.name) LIKE CONCAT('%',:search,'%')
+            )
+        ORDER BY
+            CASE
+                WHEN LOWER(a.title) LIKE CONCAT(:search,'%') THEN 1
+                WHEN LOWER(a.title) LIKE CONCAT('%',:search,'%') THEN 2
+                WHEN LOWER(a.article_content) LIKE CONCAT('%',:search,'%') THEN 3
+                WHEN LOWER(s.name) LIKE CONCAT('%',:search,'%') THEN 4
+                WHEN LOWER(c.name) LIKE CONCAT('%',:search,'%') THEN 5
+                WHEN LOWER(ut.name) LIKE CONCAT('%',:search,'%') THEN 6
+                WHEN LOWER(ct.name) LIKE CONCAT('%',:search,'%') THEN 7
+                WHEN LOWER(il.name) LIKE CONCAT('%',:search,'%') THEN 8
+                ELSE 9
+            END,
+            a.created_at DESC
+        """,
+            countQuery = """
+        SELECT COUNT(*)
+        FROM articles a
+        WHERE 
+            a.active = 1
+            AND a.status = :code
+            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
+            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+        """,
+            nativeQuery = true)
+    Page<Article> searchArticles(
+            @Param("countryIds") List<Long> countryIds,
+            @Param("updateTypeIds") List<Long> updateTypeIds,
+            @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
+            @Param("search") String search,
+            @Param("code") int code,
+            Pageable pageable
+    );
+
 }
