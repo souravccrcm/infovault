@@ -211,17 +211,27 @@ public class ArticleServiceImpl implements ArticleService {
             int page,
             int size
     ) {
+
         Pageable pageable = PageRequest.of(page, size);
 
-        log.info("Fetching all active articles");
+        int sourceIdsEmpty = (sourceIds == null || sourceIds.isEmpty()) ? 1 : 0;
+        int countryIdsEmpty = (countryIds == null || countryIds.isEmpty()) ? 1 : 0;
+        int updateTypeIdsEmpty = (updateTypeIds == null || updateTypeIds.isEmpty()) ? 1 : 0;
+        int clinicalTypeIdsEmpty = (clinicalTypeIds == null || clinicalTypeIds.isEmpty()) ? 1 : 0;
+        int statusCodesEmpty = (statusCodes == null || statusCodes.isEmpty()) ? 1 : 0;
 
         Page<ArticleResponse> articles = articleRepository
                 .searchArticlesWithFilters(
                         sourceIds,
+                        sourceIdsEmpty,
                         countryIds,
+                        countryIdsEmpty,
                         updateTypeIds,
+                        updateTypeIdsEmpty,
                         clinicalTypeIds,
+                        clinicalTypeIdsEmpty,
                         statusCodes,
+                        statusCodesEmpty,
                         search,
                         pageable
                 )

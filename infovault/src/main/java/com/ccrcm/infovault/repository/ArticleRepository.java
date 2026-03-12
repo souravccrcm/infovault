@@ -157,11 +157,11 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
         WHERE
             a.active = 1
             
-            AND (:sourceIds IS NULL OR a.source_id IN (:sourceIds))
-            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
-            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
-            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
-            AND (:statusCodes IS NULL OR a.status IN (:statusCodes))
+            AND (:sourceIdsEmpty = 1 OR a.source_id IN (:sourceIds))
+            AND (:countryIdsEmpty = 1 OR a.country_id IN (:countryIds))
+            AND (:updateTypeIdsEmpty = 1 OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIdsEmpty = 1 OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:statusCodesEmpty = 1 OR a.status IN (:statusCodes))
 
             AND (
                 :search IS NULL
@@ -183,11 +183,11 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
         WHERE
             a.active = 1
             
-            AND (:sourceIds IS NULL OR a.source_id IN (:sourceIds))
-            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
-            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
-            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
-            AND (:statusCodes IS NULL OR a.status IN (:statusCodes))
+            AND (:sourceIdsEmpty = 1 OR a.source_id IN (:sourceIds))
+            AND (:countryIdsEmpty = 1 OR a.country_id IN (:countryIds))
+            AND (:updateTypeIdsEmpty = 1 OR a.update_type_id IN (:updateTypeIds))
+            AND (:clinicalTypeIdsEmpty = 1 OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:statusCodesEmpty = 1 OR a.status IN (:statusCodes))
 
             AND (
                 :search IS NULL
@@ -198,10 +198,20 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
     Page<Article> searchArticlesWithFilters(
 
             @Param("sourceIds") List<Long> sourceIds,
+            @Param("sourceIdsEmpty") int sourceIdsEmpty,
+
             @Param("countryIds") List<Long> countryIds,
+            @Param("countryIdsEmpty") int countryIdsEmpty,
+
             @Param("updateTypeIds") List<Long> updateTypeIds,
+            @Param("updateTypeIdsEmpty") int updateTypeIdsEmpty,
+
             @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
+            @Param("clinicalTypeIdsEmpty") int clinicalTypeIdsEmpty,
+
             @Param("statusCodes") List<Integer> statusCodes,
+            @Param("statusCodesEmpty") int statusCodesEmpty,
+
             @Param("search") String search,
             Pageable pageable
     );
