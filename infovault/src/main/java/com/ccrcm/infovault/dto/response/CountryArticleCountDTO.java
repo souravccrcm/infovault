@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CountryArticleCountDTO {
+    private Long countryId;
     private String countryName;
     private String countryCode; // ISO2 or short form via CountryUtil
     private Long count;

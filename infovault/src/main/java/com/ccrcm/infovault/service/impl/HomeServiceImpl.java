@@ -112,10 +112,11 @@ public class HomeServiceImpl implements HomeService {
 
         List<CountryArticleCountDTO> result = new ArrayList<>();
         for (Object[] row : rows) {
-            String countryName = (String) row[0];
-            Long count = ((Number) row[1]).longValue();
+            Long countryId = ((Number) row[0]).longValue();
+            String countryName = (String) row[1];
+            Long count = ((Number) row[2]).longValue();
             String iso2 = CountryUtil.toIso2(countryName);
-            result.add(new CountryArticleCountDTO(countryName, iso2, count));
+            result.add(new CountryArticleCountDTO(countryId, countryName, iso2, count));
         }
 
         return result;
