@@ -41,20 +41,20 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
     List<Object[]> countByUpdateType(@Param("fromTime") LocalDateTime fromTime);
 
     @Query("""
-        SELECT a.country.name, COUNT(a)
-        FROM Article a
-        WHERE a.active = true
-          AND a.createdAt > :fromTime
-        GROUP BY a.country.name
-    """)
+    SELECT a.country.id, a.country.name, COUNT(a)
+    FROM Article a
+    WHERE a.active = true
+      AND a.createdAt > :fromTime
+    GROUP BY a.country.id, a.country.name
+""")
     List<Object[]> countByCountrySince(@Param("fromTime") LocalDateTime fromTime);
 
     @Query("""
-        SELECT a.country.name, COUNT(a)
-        FROM Article a
-        WHERE a.active = true
-        GROUP BY a.country.name
-    """)
+    SELECT a.country.id, a.country.name, COUNT(a)
+    FROM Article a
+    WHERE a.active = true
+    GROUP BY a.country.id, a.country.name
+""")
     List<Object[]> countByCountryActive();
 
     @Query("""
