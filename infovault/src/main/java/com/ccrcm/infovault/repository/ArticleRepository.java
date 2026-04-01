@@ -101,9 +101,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
             a.active = 1
             AND a.status = :code
 
-            AND (:hasCountryIds = false OR a.country_id IN (:countryIds))
-            AND (:hasUpdateTypeIds = false OR a.update_type_id IN (:updateTypeIds))
-            AND (:hasClinicalTypeIds = false OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:hasCountryIds = 0 OR a.country_id IN (:countryIds))
+            AND (:hasUpdateTypeIds = 0 OR a.update_type_id IN (:updateTypeIds))
+            AND (:hasClinicalTypeIds = 0 OR a.clinical_type_id IN (:clinicalTypeIds))
 
             AND (
                 :search IS NULL
@@ -116,7 +116,19 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
                 OR LOWER(il.name) LIKE CONCAT('%',:search,'%')
             )
 
-        ORDER BY a.created_at DESC
+        ORDER BY 
+            CASE
+                WHEN :search IS NOT NULL AND LOWER(a.title) LIKE CONCAT(:search,'%') THEN 1
+                WHEN :search IS NOT NULL AND LOWER(a.title) LIKE CONCAT('%',:search,'%') THEN 2
+                WHEN :search IS NOT NULL AND LOWER(a.article_content) LIKE CONCAT('%',:search,'%') THEN 3
+                WHEN :search IS NOT NULL AND LOWER(s.name) LIKE CONCAT('%',:search,'%') THEN 4
+                WHEN :search IS NOT NULL AND LOWER(c.name) LIKE CONCAT('%',:search,'%') THEN 5
+                WHEN :search IS NOT NULL AND LOWER(ut.name) LIKE CONCAT('%',:search,'%') THEN 6
+                WHEN :search IS NOT NULL AND LOWER(ct.name) LIKE CONCAT('%',:search,'%') THEN 7
+                WHEN :search IS NOT NULL AND LOWER(il.name) LIKE CONCAT('%',:search,'%') THEN 8
+                ELSE 9
+            END,
+            a.created_at DESC
         """,
             countQuery = """
         SELECT COUNT(*)
@@ -124,9 +136,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
         WHERE 
             a.active = 1
             AND a.status = :code
-            AND (:hasCountryIds = false OR a.country_id IN (:countryIds))
-            AND (:hasUpdateTypeIds = false OR a.update_type_id IN (:updateTypeIds))
-            AND (:hasClinicalTypeIds = false OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:hasCountryIds = 0 OR a.country_id IN (:countryIds))
+            AND (:hasUpdateTypeIds = 0 OR a.update_type_id IN (:updateTypeIds))
+            AND (:hasClinicalTypeIds = 0 OR a.clinical_type_id IN (:clinicalTypeIds))
         """,
             nativeQuery = true)
     Page<Article> searchArticles(
@@ -134,9 +146,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
             @Param("updateTypeIds") List<Long> updateTypeIds,
             @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
 
-            @Param("hasCountryIds") boolean hasCountryIds,
-            @Param("hasUpdateTypeIds") boolean hasUpdateTypeIds,
-            @Param("hasClinicalTypeIds") boolean hasClinicalTypeIds,
+            @Param("hasCountryIds") int hasCountryIds,
+            @Param("hasUpdateTypeIds") int hasUpdateTypeIds,
+            @Param("hasClinicalTypeIds") int hasClinicalTypeIds,
 
             @Param("search") String search,
             @Param("code") int code,

@@ -39,16 +39,17 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        boolean hasCountryIds = countryIds != null && !countryIds.isEmpty();
-        boolean hasUpdateTypeIds = updateTypeIds != null && !updateTypeIds.isEmpty();
-        boolean hasClinicalTypeIds = clinicalTypeIds != null && !clinicalTypeIds.isEmpty();
+        // ✅ Convert to SQL Server compatible flags (1 / 0)
+        int hasCountryIds = (countryIds != null && !countryIds.isEmpty()) ? 1 : 0;
+        int hasUpdateTypeIds = (updateTypeIds != null && !updateTypeIds.isEmpty()) ? 1 : 0;
+        int hasClinicalTypeIds = (clinicalTypeIds != null && !clinicalTypeIds.isEmpty()) ? 1 : 0;
 
-        // IMPORTANT: pass dummy list if null (to avoid Hibernate error)
-        if (!hasCountryIds) countryIds = List.of(-1L);
-        if (!hasUpdateTypeIds) updateTypeIds = List.of(-1L);
-        if (!hasClinicalTypeIds) clinicalTypeIds = List.of(-1L);
+        // ✅ Hibernate requires non-null list for IN clause
+        if (hasCountryIds == 0) countryIds = List.of(-1L);
+        if (hasUpdateTypeIds == 0) updateTypeIds = List.of(-1L);
+        if (hasClinicalTypeIds == 0) clinicalTypeIds = List.of(-1L);
 
-        // normalize search
+        // ✅ Normalize search
         if (search != null && search.trim().isEmpty()) {
             search = null;
         }
@@ -69,7 +70,7 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
         ).map(ArticleMapper::toRcmUpdateResponse);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Fetched successfully", articles)
+                new ApiResponse<>(true, "Published Rcm Updates fetched successfully", articles)
         );
     }
 
