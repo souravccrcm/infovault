@@ -39,24 +39,38 @@ public class RcmUpdateServiceImpl implements RcmUpdateService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<RcmUpdateResponse> articles = articleRepository
-                .searchArticles(
-                        countryIds,
-                        updateTypeIds,
-                        clinicalTypeIds,
-                        search,
-                        ArticleStatus.PUBLISHED.getCode(), // 👈 pass status code
-                        pageable
-                )
-                .map(ArticleMapper::toRcmUpdateResponse);
+        boolean hasCountryIds = countryIds != null && !countryIds.isEmpty();
+        boolean hasUpdateTypeIds = updateTypeIds != null && !updateTypeIds.isEmpty();
+        boolean hasClinicalTypeIds = clinicalTypeIds != null && !clinicalTypeIds.isEmpty();
 
-        ApiResponse<Page<RcmUpdateResponse>> body = new ApiResponse<>(
-                true,
-                "Published Rcm Updates fetched successfully",
-                articles
+        // IMPORTANT: pass dummy list if null (to avoid Hibernate error)
+        if (!hasCountryIds) countryIds = List.of(-1L);
+        if (!hasUpdateTypeIds) updateTypeIds = List.of(-1L);
+        if (!hasClinicalTypeIds) clinicalTypeIds = List.of(-1L);
+
+        // normalize search
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
+        if (search != null) {
+            search = search.toLowerCase();
+        }
+
+        Page<RcmUpdateResponse> articles = articleRepository.searchArticles(
+                countryIds,
+                updateTypeIds,
+                clinicalTypeIds,
+                hasCountryIds,
+                hasUpdateTypeIds,
+                hasClinicalTypeIds,
+                search,
+                ArticleStatus.PUBLISHED.getCode(),
+                pageable
+        ).map(ArticleMapper::toRcmUpdateResponse);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Fetched successfully", articles)
         );
-
-        return ResponseEntity.ok(body);
     }
 
 

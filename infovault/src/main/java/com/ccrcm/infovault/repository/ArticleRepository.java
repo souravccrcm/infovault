@@ -88,6 +88,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
     List<Article> findByActiveTrueAndStatus(ArticleStatus status);
 
     List<Article> findByCountryIdAndIdNotAndActiveTrueOrderByCreatedAtDesc(Long countryId, Long excludeArticleId, Pageable pageable);
+
     @Query(value = """
         SELECT a.*
         FROM articles a
@@ -99,9 +100,11 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
         WHERE 
             a.active = 1
             AND a.status = :code
-            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
-            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
-            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+
+            AND (:hasCountryIds = false OR a.country_id IN (:countryIds))
+            AND (:hasUpdateTypeIds = false OR a.update_type_id IN (:updateTypeIds))
+            AND (:hasClinicalTypeIds = false OR a.clinical_type_id IN (:clinicalTypeIds))
+
             AND (
                 :search IS NULL
                 OR LOWER(a.title) LIKE CONCAT('%',:search,'%')
@@ -112,19 +115,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
                 OR LOWER(ct.name) LIKE CONCAT('%',:search,'%')
                 OR LOWER(il.name) LIKE CONCAT('%',:search,'%')
             )
-        ORDER BY
-            CASE
-                WHEN LOWER(a.title) LIKE CONCAT(:search,'%') THEN 1
-                WHEN LOWER(a.title) LIKE CONCAT('%',:search,'%') THEN 2
-                WHEN LOWER(a.article_content) LIKE CONCAT('%',:search,'%') THEN 3
-                WHEN LOWER(s.name) LIKE CONCAT('%',:search,'%') THEN 4
-                WHEN LOWER(c.name) LIKE CONCAT('%',:search,'%') THEN 5
-                WHEN LOWER(ut.name) LIKE CONCAT('%',:search,'%') THEN 6
-                WHEN LOWER(ct.name) LIKE CONCAT('%',:search,'%') THEN 7
-                WHEN LOWER(il.name) LIKE CONCAT('%',:search,'%') THEN 8
-                ELSE 9
-            END,
-            a.created_at DESC
+
+        ORDER BY a.created_at DESC
         """,
             countQuery = """
         SELECT COUNT(*)
@@ -132,15 +124,20 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpec
         WHERE 
             a.active = 1
             AND a.status = :code
-            AND (:countryIds IS NULL OR a.country_id IN (:countryIds))
-            AND (:updateTypeIds IS NULL OR a.update_type_id IN (:updateTypeIds))
-            AND (:clinicalTypeIds IS NULL OR a.clinical_type_id IN (:clinicalTypeIds))
+            AND (:hasCountryIds = false OR a.country_id IN (:countryIds))
+            AND (:hasUpdateTypeIds = false OR a.update_type_id IN (:updateTypeIds))
+            AND (:hasClinicalTypeIds = false OR a.clinical_type_id IN (:clinicalTypeIds))
         """,
             nativeQuery = true)
     Page<Article> searchArticles(
             @Param("countryIds") List<Long> countryIds,
             @Param("updateTypeIds") List<Long> updateTypeIds,
             @Param("clinicalTypeIds") List<Long> clinicalTypeIds,
+
+            @Param("hasCountryIds") boolean hasCountryIds,
+            @Param("hasUpdateTypeIds") boolean hasUpdateTypeIds,
+            @Param("hasClinicalTypeIds") boolean hasClinicalTypeIds,
+
             @Param("search") String search,
             @Param("code") int code,
             Pageable pageable
