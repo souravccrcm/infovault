@@ -1,6 +1,7 @@
 package com.ccrcm.infovault.controller;
 
 import com.ccrcm.infovault.dto.request.LoginRequest;
+import com.ccrcm.infovault.dto.request.RefreshTokenRequest;
 import com.ccrcm.infovault.dto.response.LoginResponse;
 import com.ccrcm.infovault.globalResposeDto.ApiResponse;
 import com.ccrcm.infovault.service.UserService;
@@ -19,22 +20,39 @@ public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(
-            @Valid @RequestBody LoginRequest request) {
+//    @PostMapping("/login")
+//    public ResponseEntity<ApiResponse<LoginResponse>> login(
+//            @Valid @RequestBody LoginRequest request) {
+//
+//        log.info("Login attempt for email: {}", request.getEmail());
+//
+//        LoginResponse response = userService.login(request);
+//
+//        log.info("Login successful for email: {}", request.getEmail());
+//
+//        return ResponseEntity.ok(
+//                new ApiResponse<>(
+//                        true,
+//                        "Login successful",
+//                        response
+//                )
+//        );
+//    }
 
-        log.info("Login attempt for email: {}", request.getEmail());
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
 
         LoginResponse response = userService.login(request);
 
-        log.info("Login successful for email: {}", request.getEmail());
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        true,
-                        "Login successful",
-                        response
-                )
-        );
+        return ResponseEntity.ok(response);
     }
+
+    // REFRESH API HERE (GOOD PRACTICE)
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(userService.refreshToken(request));
+    }
+
+
+
 }
