@@ -1,8 +1,6 @@
 package com.ccrcm.infovault.config;
 
-import com.ccrcm.infovault.security.AppUserDetailsService;
-import com.ccrcm.infovault.security.JwtAuthFilter;
-import com.ccrcm.infovault.security.JwtUtil;
+import com.ccrcm.infovault.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +21,8 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final AppUserDetailsService userDetailsService;
-    private final AuthenticationManager authenticationManager;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final JwtAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public JwtAuthFilter jwtAuthFilter() {
@@ -39,6 +38,13 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                // 🔥 IMPORTANT
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",

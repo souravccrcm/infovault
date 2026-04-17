@@ -7,10 +7,13 @@ import com.ccrcm.infovault.dto.response.UserResponse;
 import com.ccrcm.infovault.entity.Permission;
 import com.ccrcm.infovault.entity.Role;
 import com.ccrcm.infovault.entity.User;
+import com.ccrcm.infovault.exception.BadRequestException;
+import com.ccrcm.infovault.exception.ResourceNotFoundException;
 import com.ccrcm.infovault.repository.RoleRepository;
 import com.ccrcm.infovault.repository.UserRepository;
 import com.ccrcm.infovault.security.JwtUtil;
 import com.ccrcm.infovault.service.UserService;
+import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -123,17 +126,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse refreshToken(RefreshTokenRequest request) {
+
         String refreshToken = request.getRefreshToken();
 
-        if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
-            throw new RuntimeException("Invalid refresh token");
+        // 🔥 THIS LINE VALIDATES TOKEN (throws exception if invalid)
+        Claims claims = jwtUtil.getClaims(refreshToken);
+
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            throw new BadRequestException("Invalid token type");
         }
 
         String email = jwtUtil.getUsername(refreshToken);
         Long userId = jwtUtil.getUserId(refreshToken);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         String role = user.getRole() != null ? user.getRole().getName() : "USER";
 
@@ -144,7 +151,7 @@ public class UserServiceImpl implements UserService {
         response.setEmail(email);
         response.setRole(role);
         response.setAccessToken(newAccessToken);
-        response.setRefreshToken(refreshToken); // reuse same
+        response.setRefreshToken(refreshToken);
 
         return response;
     }

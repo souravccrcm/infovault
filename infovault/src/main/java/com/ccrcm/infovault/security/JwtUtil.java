@@ -27,12 +27,10 @@ public class JwtUtil {
         this.refreshExpirationMs = refreshExpirationMs;
     }
 
-    // ✅ ACCESS TOKEN
     public String generateAccessToken(String username, Long userId, String role) {
         return buildToken(username, userId, role, accessExpirationMs);
     }
 
-    // ✅ REFRESH TOKEN
     public String generateRefreshToken(String username, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
@@ -56,17 +54,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
